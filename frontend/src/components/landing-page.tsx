@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase";
 
@@ -210,16 +210,77 @@ function NoteCard({ note }: { note: { text: string; author: string; config: Note
   );
 }
 
+function TermsModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} />
+      <div
+        className="relative flex max-h-[80vh] w-full max-w-lg flex-col rounded-2xl shadow-2xl"
+        style={{ background: MARBLE }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: STONE }}>
+          <h2 className="text-lg font-semibold" style={{ color: BEAN }}>Terms & Conditions</h2>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-black/5" aria-label="Close">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: LATTE }}>
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ color: BEAN }}>
+          <p className="mb-1 text-xs" style={{ color: LATTE }}>Last updated: September 2026</p>
+          <p className="mb-4 text-sm leading-relaxed">Welcome to Grounded.</p>
+          <p className="mb-4 text-sm leading-relaxed">Grounded is a fictional project created for demonstration, development, and educational purposes. By using this application and continuing with Google sign-in, you acknowledge and agree to the following terms.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>1. Fictional Brand</h3>
+          <p className="mb-2 text-sm leading-relaxed">Grounded is a fictional brand and project.</p>
+          <p className="mb-2 text-sm leading-relaxed">It is not intended to represent, operate as, or impersonate any existing café, company, application, service, or brand.</p>
+          <p className="mb-2 text-sm leading-relaxed">Any similarities in naming, visual style, concepts, or presentation to existing businesses or products are unintentional.</p>
+          <p className="mb-4 text-sm leading-relaxed">Grounded does not claim affiliation with or endorsement by any similarly named or visually similar brand.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>2. Open Source & Third-Party Materials</h3>
+          <p className="mb-2 text-sm leading-relaxed">This project makes use of open-source software, libraries, frameworks, and openly licensed resources where applicable.</p>
+          <p className="mb-2 text-sm leading-relaxed">Third-party software and assets remain subject to their respective licenses and the rights of their original creators.</p>
+          <p className="mb-2 text-sm leading-relaxed">Grounded does not claim ownership of third-party open-source software, libraries, assets, trademarks, or intellectual property used by the project.</p>
+          <p className="mb-4 text-sm leading-relaxed">Where required, appropriate attribution and licensing information should be provided in the project repository.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>3. Project Purpose</h3>
+          <p className="mb-2 text-sm leading-relaxed">Grounded is provided as a fictional demonstration/project and is not intended to represent a commercial café, production business, or real-world service.</p>
+          <p className="mb-4 text-sm leading-relaxed">Features, content, locations, reviews, quotes, and other information presented within the application may be fictional or generated for demonstration purposes.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>4. No Affiliation</h3>
+          <p className="mb-4 text-sm leading-relaxed">Grounded is independently created and is not affiliated with, sponsored by, endorsed by, or associated with any real-world company or brand unless explicitly stated otherwise.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>5. Use of the Application</h3>
+          <p className="mb-4 text-sm leading-relaxed">You agree to use the application only for lawful purposes and not to misuse, disrupt, or attempt to compromise the application or its authentication systems.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>6. Changes</h3>
+          <p className="mb-2 text-sm leading-relaxed">These Terms & Conditions may be updated as the project evolves.</p>
+          <p className="mb-4 text-sm leading-relaxed">Continued use of the application after changes are made constitutes acceptance of the updated terms.</p>
+          <h3 className="mb-2 mt-5 text-sm font-semibold" style={{ color: ESPRESSO }}>7. Contact</h3>
+          <p className="mb-4 text-sm leading-relaxed">For questions regarding this project, refer to the project repository and its associated contact information.</p>
+        </div>
+        <div className="border-t px-6 py-4" style={{ borderColor: STONE }}>
+          <button onClick={onClose} className="w-full rounded-xl px-4 py-2.5 text-sm font-medium transition-all" style={{ background: BEAN, color: IVORY }}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LandingPage() {
   const desktopNotes = useMemo(() => pickDesktopNotes(9), []);
   const mobileNotes = useMemo(() => pickMobileNotes(), []);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   async function handleGoogleSignIn() {
+    if (!termsAccepted || isSigningIn) return;
+    setIsSigningIn(true);
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(getFirebaseAuth(), provider);
     } catch (err) {
       console.error("Sign-in error:", err);
+    } finally {
+      setIsSigningIn(false);
     }
   }
 
@@ -352,17 +413,17 @@ export function LandingPage() {
         </div>
 
         {/* Bottom safe area — centered credit + auth */}
-        <div className="pb-8 pt-6 px-6 flex flex-col items-center">
+        <div className="max-md:pb-5 max-md:pt-4 pb-8 pt-6 px-6 flex flex-col items-center">
           {/* Creator credit — centered */}
           <p
-            className="text-[10px] mb-5 text-center"
+            className="text-[10px] max-md:mb-3 mb-5 text-center"
             style={{ color: `${LATTE}B0` }}
           >
             made by <a href="https://github.com/Feroan101" target="_blank" rel="noopener noreferrer" style={{ color: `${CREAM}D0` }} className="hover:underline">@feroan101</a>
           </p>
 
           {/* Logo mark */}
-          <div className="mb-4 flex items-center gap-3">
+          <div className="max-md:mb-3 mb-4 flex items-center gap-3">
             <img
               src="/coffee-logo.png"
               alt="Grounded logo"
@@ -378,13 +439,13 @@ export function LandingPage() {
 
           {/* Heading */}
           <h1
-            className="mb-2 text-2xl font-semibold tracking-tight"
+            className="max-md:mb-1 mb-2 text-2xl font-semibold tracking-tight"
             style={{ color: MARBLE }}
           >
             Welcome back.
           </h1>
           <p
-            className="mb-6 text-sm"
+            className="max-md:mb-4 mb-6 text-sm"
             style={{ color: LATTE }}
           >
             Your workspace is waiting.
@@ -393,7 +454,8 @@ export function LandingPage() {
           {/* Sign-in button */}
           <button
             onClick={handleGoogleSignIn}
-            className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl"
+            disabled={!termsAccepted || isSigningIn}
+            className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg"
             style={{
               background: IVORY,
               color: BEAN,
@@ -420,9 +482,30 @@ export function LandingPage() {
             Continue with Google
           </button>
 
+          <label className="mt-2 flex items-center justify-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="h-[14px] w-[14px] shrink-0 cursor-pointer"
+              style={{ accentColor: ESPRESSO }}
+            />
+            <span className="text-[11px] leading-tight" style={{ color: `${LATTE}B0` }}>
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTermsModal(true); }}
+                className="underline transition-colors hover:text-marble"
+                style={{ color: `${CREAM}B0` }}
+              >
+                Terms &amp; Conditions
+              </button>
+            </span>
+          </label>
+
           {/* Subtle note */}
           <p
-            className="mt-4 text-center text-[11px]"
+            className="max-md:mt-2 mt-4 text-center text-[11px]"
             style={{ color: LATTE }}
           >
             Sign in to access your personalized coffee assistant.
@@ -431,7 +514,7 @@ export function LandingPage() {
       </div>
 
       {/* ===== DESKTOP AUTHENTICATION AREA ===== */}
-      <div className="absolute inset-y-0 right-0 z-20 hidden md:flex md:items-center md:justify-end md:pr-16 lg:pr-24 md:w-1/2">
+      <div className="absolute inset-y-0 right-0 z-20 hidden md:flex md:items-center md:justify-end md:pr-20 lg:pr-28 md:w-1/2">
         <div className="w-full max-w-md px-6 pb-8 pt-4 md:px-0 md:pb-0">
           {/* Logo mark */}
           <div className="mb-6 flex items-center gap-3 sm:mb-8">
@@ -465,7 +548,8 @@ export function LandingPage() {
           {/* Sign-in button */}
           <button
             onClick={handleGoogleSignIn}
-            className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl"
+            disabled={!termsAccepted || isSigningIn}
+            className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg"
             style={{
               background: IVORY,
               color: BEAN,
@@ -492,6 +576,27 @@ export function LandingPage() {
             Continue with Google
           </button>
 
+          <label className="mt-2.5 flex items-center gap-1.5 cursor-pointer select-none md:mt-3 md:px-3 md:py-1.5">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="h-[14px] w-[14px] shrink-0 cursor-pointer"
+              style={{ accentColor: ESPRESSO }}
+            />
+            <span className="text-[11px] leading-tight" style={{ color: `${LATTE}B0` }}>
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTermsModal(true); }}
+                className="underline transition-colors hover:text-marble"
+                style={{ color: `${CREAM}B0` }}
+              >
+                Terms &amp; Conditions
+              </button>
+            </span>
+          </label>
+
           {/* Subtle note */}
           <p
             className="mt-6 text-center text-xs"
@@ -511,6 +616,8 @@ export function LandingPage() {
           made by <a href="https://github.com/Feroan101" target="_blank" rel="noopener noreferrer" style={{ color: `${CREAM}D0` }} className="hover:underline">@feroan101</a>
         </p>
       </div>
+
+      {showTermsModal && <TermsModal onClose={() => setShowTermsModal(false)} />}
     </div>
   );
 }
