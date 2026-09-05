@@ -1,26 +1,147 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --marble: #F7F6F2;
+  --ivory: #FCFBF8;
+  --espresso: #4A2C20;
+  --bean: #2B1B15;
+  --latte: #8B6B57;
+  --cream: #E8DCCF;
+  --stone: #D8D5CF;
+  --background: var(--marble);
+  --foreground: var(--bean);
 }
 
 @theme inline {
+  --color-marble: var(--marble);
+  --color-ivory: var(--ivory);
+  --color-espresso: var(--espresso);
+  --color-bean: var(--bean);
+  --color-latte: var(--latte);
+  --color-cream: var(--cream);
+  --color-stone: var(--stone);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--marble);
+  color: var(--bean);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Marble background texture */
+.marble-bg {
+  background-color: var(--marble);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(216, 213, 207, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(216, 213, 207, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgba(216, 213, 207, 0.08) 0%, transparent 50%);
+}
+
+/* Subtle veining effect */
+.marble-veins {
+  background-image:
+    linear-gradient(135deg, transparent 40%, rgba(216, 213, 207, 0.05) 50%, transparent 60%),
+    linear-gradient(225deg, transparent 40%, rgba(216, 213, 207, 0.03) 50%, transparent 60%);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-pulse-dot {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.animate-pulse-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.animate-pulse-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Floating card animations — slow, organic, independent */
+@keyframes float-1 {
+  0%, 100% { transform: rotate(-3deg) translateY(0px); }
+  50% { transform: rotate(2deg) translateY(-8px); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: rotate(2deg) translateY(0px); }
+  50% { transform: rotate(-2deg) translateY(-6px); }
+}
+
+@keyframes float-3 {
+  0%, 100% { transform: rotate(-1deg) translateY(-4px); }
+  50% { transform: rotate(3deg) translateY(4px); }
+}
+
+@keyframes float-4 {
+  0%, 100% { transform: rotate(1deg) translateY(2px); }
+  50% { transform: rotate(-3deg) translateY(-10px); }
+}
+
+.animate-float-1 {
+  animation: float-1 7s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 9s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+.animate-float-3 {
+  animation: float-3 11s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.animate-float-4 {
+  animation: float-4 8s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--stone);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--latte);
 }
