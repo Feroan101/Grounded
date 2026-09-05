@@ -12,13 +12,16 @@ FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "grounded-coffeeshop
 # Token verification uses Google's public JWKS keys and does NOT need credentials.
 # Credentials are only needed for Admin SDK operations (Firestore, user management).
 #
-# Local development (optional):
+# Local development (recommended):
+#   gcloud auth application-default login
+#   Then GOOGLE_APPLICATION_CREDENTIALS is set automatically.
+#
+# Alternative (if you have a service-account JSON):
 #   FIREBASE_CREDENTIALS_PATH=/home/you/.grounded/firebase-service-account.json
 #
 # Render (when Firestore access is needed):
-#   Option A: Mount service-account JSON as a Secret File, set:
-#     FIREBASE_CREDENTIALS_PATH=/etc/secrets/firebase-service-account.json
-#   Option B: Set GOOGLE_APPLICATION_CREDENTIALS to the mounted path.
+#   Configure Workload Identity Federation or set
+#   GOOGLE_APPLICATION_CREDENTIALS to the mounted credential file.
 FIREBASE_CREDENTIALS_PATH = os.environ.get("FIREBASE_CREDENTIALS_PATH", "")
 
 ALLOWED_ORIGINS = os.environ.get(
