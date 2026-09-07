@@ -13,7 +13,7 @@ const SUGGESTIONS = [
 export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-12 text-center">
-      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-espresso/10">
+      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-espresso/10 ring-1 ring-espresso/10">
         <svg
           className="h-8 w-8 text-espresso"
           viewBox="0 0 24 24"
@@ -40,7 +40,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
       </p>
 
       <div className="flex flex-col gap-3">
-        <p className="text-xs font-medium uppercase tracking-wider text-latte/70">
+        <p className="text-xs font-medium uppercase tracking-wider text-espresso/50">
           Try asking
         </p>
         <div className="flex flex-wrap justify-center gap-2">
@@ -48,7 +48,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
             <button
               key={suggestion}
               onClick={() => onSuggestionClick(suggestion)}
-              className="rounded-full border border-stone/60 bg-ivory px-4 py-2 text-sm text-latte transition-all hover:border-espresso/40 hover:bg-cream/50 hover:text-espresso"
+              className="rounded-full border border-espresso/15 bg-ivory px-4 py-2 text-sm text-latte transition-all hover:border-espresso/30 hover:bg-cream/50 hover:text-espresso hover:shadow-sm"
             >
               {suggestion}
             </button>

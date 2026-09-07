@@ -9,7 +9,7 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-cream px-4 py-3 text-sm leading-relaxed text-bean shadow-sm sm:max-w-[70%]">
+        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-cream px-4 py-3 text-sm leading-relaxed text-bean shadow-sm ring-1 ring-espresso/5 sm:max-w-[70%]">
           {content}
         </div>
       </div>

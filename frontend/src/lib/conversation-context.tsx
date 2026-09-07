@@ -43,6 +43,7 @@ interface ConversationContextValue {
   setActiveConversation: (id: string | null) => void;
   sendMessage: (content: string) => void;
   deleteConversation: (id: string) => void;
+  renameConversation: (id: string, newTitle: string) => void;
 }
 
 const ConversationContext = createContext<ConversationContextValue | null>(null);
@@ -243,6 +244,27 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
     [activeConversationId, user]
   );
 
+  const renameConversation = useCallback(
+    (id: string, newTitle: string) => {
+      const trimmed = newTitle.trim() || "Untitled conversation";
+
+      // Update React state
+      setConversations((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, title: trimmed } : c))
+      );
+
+      // Persist to Firestore
+      if (user) {
+        const db = getFirebaseFirestore();
+        const convRef = doc(db, conversationsPath(user.uid), id);
+        setDoc(convRef, { title: trimmed }, { merge: true }).catch((err) => {
+          console.error("Failed to rename conversation in Firestore:", err);
+        });
+      }
+    },
+    [user]
+  );
+
   return (
     <ConversationContext.Provider
       value={{
@@ -254,6 +276,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         setActiveConversation: setActiveConversationId,
         sendMessage,
         deleteConversation,
+        renameConversation,
       }}
     >
       {children}

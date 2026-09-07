@@ -60,6 +60,7 @@ export function ChatView() {
               <p className="mt-1 text-sm text-latte">
                 What can I get for you today?
               </p>
+              <div className="mt-4 h-px bg-gradient-to-r from-espresso/20 via-espresso/10 to-transparent" />
             </div>
             <EmptyState onSuggestionClick={handleSend} />
           </div>

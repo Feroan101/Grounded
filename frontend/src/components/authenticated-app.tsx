@@ -1,13 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useConversations } from "@/lib/conversation-context";
 import { ChatView } from "@/components/chat-view";
 import { HistoryView } from "@/components/history-view";
 import { ProfileView } from "@/components/profile-view";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type Section = "chat" | "history" | "profile";
+
+function RenameInput({
+  initialTitle,
+  onSave,
+  onCancel,
+}: {
+  initialTitle: string;
+  onSave: (title: string) => void;
+  onCancel: () => void;
+}) {
+  const [value, setValue] = useState(initialTitle);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, []);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    onSave(value);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => onSave(value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onCancel();
+        }}
+        className="min-w-0 flex-1 rounded border border-espresso/40 bg-ivory px-1.5 py-0.5 text-xs text-bean focus:outline-none focus:ring-1 focus:ring-espresso/30"
+      />
+    </form>
+  );
+}
 
 function SidebarNav({
   activeSection,
@@ -19,8 +58,35 @@ function SidebarNav({
   onNewChat: () => void;
 }) {
   const { user } = useAuth();
-  const { conversations, activeConversationId, setActiveConversation, deleteConversation } =
-    useConversations();
+  const {
+    conversations,
+    activeConversationId,
+    setActiveConversation,
+    deleteConversation,
+    renameConversation,
+  } = useConversations();
+
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [renameTarget, setRenameTarget] = useState<string | null>(null);
+
+  function handleSelect(id: string) {
+    setActiveConversation(id);
+    onNavigate("chat");
+  }
+
+  function handleDeleteConfirm() {
+    if (deleteTarget) {
+      deleteConversation(deleteTarget);
+      setDeleteTarget(null);
+    }
+  }
+
+  function handleRenameSave(title: string) {
+    if (renameTarget) {
+      renameConversation(renameTarget, title);
+      setRenameTarget(null);
+    }
+  }
 
   return (
     <aside className="hidden h-full w-[220px] flex-shrink-0 flex-col border-r border-stone/50 bg-marble md:flex">
@@ -93,29 +159,50 @@ function SidebarNav({
             {conversations.slice(0, 8).map((conv) => (
               <div
                 key={conv.id}
-                onClick={() => {
-                  setActiveConversation(conv.id);
-                  onNavigate("chat");
-                }}
+                onClick={() => handleSelect(conv.id)}
                 className={`group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs transition-all cursor-pointer ${
                   conv.id === activeConversationId
                     ? "bg-espresso/10 text-espresso"
                     : "text-latte hover:bg-cream/50 hover:text-bean"
                 }`}
               >
-                <span className="truncate">{conv.title}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteConversation(conv.id);
-                  }}
-                  className="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                  aria-label="Delete"
-                >
-                  <svg className="h-3 w-3 text-latte" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
+                {renameTarget === conv.id ? (
+                  <RenameInput
+                    initialTitle={conv.title}
+                    onSave={handleRenameSave}
+                    onCancel={() => setRenameTarget(null)}
+                  />
+                ) : (
+                  <>
+                    <span className="truncate">{conv.title}</span>
+                    <div className="flex flex-shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRenameTarget(conv.id);
+                        }}
+                        className="rounded p-0.5 text-latte hover:text-espresso"
+                        aria-label="Rename"
+                      >
+                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget(conv.id);
+                        }}
+                        className="rounded p-0.5 text-latte hover:text-espresso"
+                        aria-label="Delete"
+                      >
+                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -146,6 +233,16 @@ function SidebarNav({
           </div>
         </div>
       </div>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete conversation?"
+          message="This conversation and its saved messages will be permanently deleted."
+          confirmLabel="Delete"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </aside>
   );
 }
@@ -238,6 +335,10 @@ export function AuthenticatedApp() {
     setActiveSection(s);
   }
 
+  function handleHistorySelect() {
+    setActiveSection("chat");
+  }
+
   return (
     <div className="flex h-screen flex-col marble-bg marble-veins md:flex-row">
       <SidebarNav
@@ -249,7 +350,7 @@ export function AuthenticatedApp() {
 
       <main className="flex-1 overflow-hidden">
         {activeSection === "chat" && <ChatView />}
-        {activeSection === "history" && <HistoryView />}
+        {activeSection === "history" && <HistoryView onSelect={handleHistorySelect} />}
         {activeSection === "profile" && <ProfileView />}
       </main>
 

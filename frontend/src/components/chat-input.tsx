@@ -7,12 +7,6 @@ interface ChatInputProps {
   disabled?: boolean;
 }
 
-const SUGGESTIONS = [
-  "Something cold and not too sweet",
-  "What would I like if I enjoy caramel?",
-  "Recommend something for a rainy day",
-];
-
 export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [input, setInput] = useState("");
 
@@ -24,16 +18,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     setInput("");
   }
 
-  function handleSuggestion(suggestion: string) {
-    if (disabled) return;
-    onSend(suggestion);
-  }
-
   return (
-    <div className="border-t border-stone/50 bg-marble/80 backdrop-blur-md">
+    <div className="border-t border-espresso/10 bg-marble/80 backdrop-blur-md">
       <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex items-end gap-3 rounded-2xl border border-stone/60 bg-ivory p-2 shadow-sm transition-all focus-within:border-espresso/40 focus-within:shadow-md">
+          <div className="flex items-end gap-3 rounded-2xl border border-espresso/20 bg-ivory p-2 shadow-sm transition-all focus-within:border-espresso/40 focus-within:shadow-md focus-within:ring-1 focus-within:ring-espresso/10">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -52,7 +41,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             <button
               type="submit"
               disabled={!input.trim() || disabled}
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-espresso text-ivory transition-all hover:bg-espresso/90 disabled:opacity-30 disabled:hover:bg-espresso"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-espresso text-ivory transition-all hover:bg-bean disabled:opacity-30 disabled:hover:bg-espresso"
               aria-label="Send message"
             >
               <svg
@@ -67,19 +56,6 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             </button>
           </div>
         </form>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {SUGGESTIONS.map((suggestion) => (
-            <button
-              key={suggestion}
-              onClick={() => handleSuggestion(suggestion)}
-              disabled={disabled}
-              className="rounded-full border border-stone/50 bg-ivory/80 px-3 py-1.5 text-xs text-latte transition-all hover:border-espresso/40 hover:text-espresso disabled:opacity-50"
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );

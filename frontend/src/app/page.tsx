@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth-context";
 import { ConversationProvider } from "@/lib/conversation-context";
 import { LandingPage } from "@/components/landing-page";
 import { AuthenticatedApp } from "@/components/authenticated-app";
+import { CookieConsent } from "@/components/cookie-consent";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -27,6 +28,7 @@ export default function Home() {
   return (
     <ConversationProvider>
       <AuthenticatedApp />
+      <CookieConsent />
     </ConversationProvider>
   );
 }
