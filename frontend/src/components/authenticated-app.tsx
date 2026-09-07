@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useConversations } from "@/lib/conversation-context";
 import { ChatView } from "@/components/chat-view";
@@ -9,6 +9,34 @@ import { ProfileView } from "@/components/profile-view";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type Section = "chat" | "history" | "profile";
+
+function ErrorToast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 5000);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
+
+  return (
+    <div className="fixed bottom-20 left-1/2 z-[60] -translate-x-1/2 animate-slide-up md:bottom-6">
+      <div className="flex items-center gap-3 rounded-xl border border-espresso/15 bg-marble px-4 py-3 shadow-lg">
+        <svg className="h-4 w-4 flex-shrink-0 text-espresso" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+        <p className="text-sm text-bean">{message}</p>
+        <button
+          onClick={onDismiss}
+          className="ml-2 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-latte hover:text-espresso"
+          aria-label="Dismiss"
+        >
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function RenameInput({
   initialTitle,
@@ -43,6 +71,7 @@ function RenameInput({
           if (e.key === "Escape") onCancel();
         }}
         className="min-w-0 flex-1 rounded border border-espresso/40 bg-ivory px-1.5 py-0.5 text-xs text-bean focus:outline-none focus:ring-1 focus:ring-espresso/30"
+        aria-label="Rename conversation"
       />
     </form>
   );
@@ -90,7 +119,6 @@ function SidebarNav({
 
   return (
     <aside className="hidden h-full w-[220px] flex-shrink-0 flex-col border-r border-stone/50 bg-marble md:flex">
-      {/* Header */}
       <div className="flex items-center gap-3 border-b border-stone/50 px-4 py-4">
         <img
           src="/coffee-logo.png"
@@ -102,7 +130,6 @@ function SidebarNav({
         </span>
       </div>
 
-      {/* New chat */}
       <div className="px-3 pt-3">
         <button
           onClick={onNewChat}
@@ -115,7 +142,6 @@ function SidebarNav({
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="mt-3 flex flex-col gap-0.5 px-3">
         {(["chat", "history", "profile"] as Section[]).map((s) => (
           <button
@@ -149,7 +175,6 @@ function SidebarNav({
         ))}
       </nav>
 
-      {/* Recent conversations (sidebar history) */}
       {activeSection === "chat" && conversations.length > 0 && (
         <div className="mt-4 flex-1 overflow-y-auto border-t border-stone/50 px-3 pt-3">
           <p className="mb-2 px-3 text-[10px] font-medium uppercase tracking-wider text-latte/60">
@@ -209,7 +234,6 @@ function SidebarNav({
         </div>
       )}
 
-      {/* User */}
       <div className="mt-auto border-t border-stone/50 px-3 py-3">
         <div className="flex items-center gap-3">
           {user?.photoURL ? (
@@ -289,7 +313,7 @@ function MobileBottomNav({
   onNavigate: (s: Section) => void;
 }) {
   return (
-    <nav className="flex h-14 items-center border-t border-stone/50 bg-marble/80 backdrop-blur-md md:hidden">
+    <nav className="flex h-14 flex-shrink-0 items-center border-t border-stone/50 bg-marble/80 backdrop-blur-md md:hidden" role="navigation" aria-label="Main navigation">
       {(["chat", "history", "profile"] as Section[]).map((s) => (
         <button
           key={s}
@@ -297,6 +321,7 @@ function MobileBottomNav({
           className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors ${
             activeSection === s ? "text-espresso" : "text-latte"
           }`}
+          aria-current={activeSection === s ? "page" : undefined}
         >
           {s === "chat" && (
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -324,20 +349,20 @@ function MobileBottomNav({
 
 export function AuthenticatedApp() {
   const [activeSection, setActiveSection] = useState<Section>("chat");
-  const { createConversation } = useConversations();
+  const { createConversation, error, clearError } = useConversations();
 
-  function handleNewChat() {
+  const handleNewChat = useCallback(() => {
     createConversation();
     setActiveSection("chat");
-  }
+  }, [createConversation]);
 
-  function handleNavigate(s: Section) {
+  const handleNavigate = useCallback((s: Section) => {
     setActiveSection(s);
-  }
+  }, []);
 
-  function handleHistorySelect() {
+  const handleHistorySelect = useCallback(() => {
     setActiveSection("chat");
-  }
+  }, []);
 
   return (
     <div className="flex h-screen flex-col marble-bg marble-veins md:flex-row">
@@ -355,6 +380,8 @@ export function AuthenticatedApp() {
       </main>
 
       <MobileBottomNav activeSection={activeSection} onNavigate={handleNavigate} />
+
+      {error && <ErrorToast message={error} onDismiss={clearError} />}
     </div>
   );
 }

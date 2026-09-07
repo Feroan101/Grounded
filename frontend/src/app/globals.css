@@ -8,6 +8,7 @@
   --latte: #8B6B57;
   --cream: #E8DCCF;
   --stone: #D8D5CF;
+  --cafe: #C4A882;
   --background: var(--marble);
   --foreground: var(--bean);
 }
@@ -20,6 +21,7 @@
   --color-latte: var(--latte);
   --color-cream: var(--cream);
   --color-stone: var(--stone);
+  --color-cafe: var(--cafe);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -128,9 +130,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Better touch scrolling on iOS */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -144,4 +151,16 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--latte);
+}
+
+/* Prevent text selection on interactive elements */
+button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area insets for mobile */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

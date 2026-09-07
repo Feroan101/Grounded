@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { signOut } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase";
@@ -14,10 +14,18 @@ function setCookie(name: string, value: string) {
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
 }
 
-function hasConsent(): boolean {
-  if (typeof document === "undefined") return false;
+function deleteCookie(name: string) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+}
+
+function getConsentValue(): "accepted" | "declined" | null {
+  if (typeof document === "undefined") return null;
   const val = document.cookie.split("; ").find((c) => c.startsWith(`${CONSENT_COOKIE}=`));
-  return val?.split("=")[1] === "accepted";
+  if (!val) return null;
+  const v = val.split("=")[1];
+  if (v === "accepted") return "accepted";
+  if (v === "declined") return "declined";
+  return null;
 }
 
 export function ProfileView() {
@@ -29,28 +37,44 @@ export function ProfileView() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
+  const [consentState, setConsentState] = useState<"accepted" | "declined" | null>(getConsentValue);
+  const [showCookieSettings, setShowCookieSettings] = useState(false);
 
   const displayName = customName || user?.displayName || "Grounded User";
 
   function handleSave() {
     const trimmed = editValue.trim();
-    if (trimmed && hasConsent()) {
+    if (trimmed && consentState === "accepted") {
       setCookie(DISPLAY_NAME_COOKIE, trimmed);
       setCustomName(trimmed);
     } else if (trimmed) {
-      // No consent yet — just show locally, don't persist
       setCustomName(trimmed);
     }
     setIsEditing(false);
   }
 
-  async function handleSignOut() {
-    await signOut(getFirebaseAuth());
+  function handleAcceptCookies() {
+    setCookie(CONSENT_COOKIE, "accepted");
+    setConsentState("accepted");
+    if (customName) {
+      setCookie(DISPLAY_NAME_COOKIE, customName);
+    }
+    setShowCookieSettings(false);
   }
+
+  function handleDeclineCookies() {
+    setCookie(CONSENT_COOKIE, "declined");
+    setConsentState("declined");
+    deleteCookie(DISPLAY_NAME_COOKIE);
+    setShowCookieSettings(false);
+  }
+
+  const handleSignOut = useCallback(async () => {
+    await signOut(getFirebaseAuth());
+  }, []);
 
   return (
     <div className="mx-auto max-w-lg px-4 py-8 sm:px-6">
-      {/* Avatar + name */}
       <div className="flex flex-col items-center text-center">
         {user?.photoURL ? (
           <img
@@ -72,9 +96,8 @@ export function ProfileView() {
         </p>
       </div>
 
-      {/* Account section */}
       <div className="mt-8 rounded-xl border border-stone/50 bg-ivory/80 p-5">
-        <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-latte/70">
+        <h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.2em] text-latte/60">
           Account
         </h3>
 
@@ -97,6 +120,7 @@ export function ProfileView() {
                     if (e.key === "Escape") setIsEditing(false);
                   }}
                   className="w-40 rounded-lg border border-espresso/40 bg-marble px-2 py-1 text-sm text-bean focus:outline-none focus:ring-1 focus:ring-espresso/30"
+                  aria-label="Display name"
                 />
                 <button
                   type="submit"
@@ -134,7 +158,63 @@ export function ProfileView() {
         </div>
       </div>
 
-      {/* Sign out */}
+      <div className="mt-4 rounded-xl border border-stone/50 bg-ivory/80 p-5">
+        <h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.2em] text-latte/60">
+          Preferences
+        </h3>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between text-sm">
+            <div>
+              <span className="text-bean">Cookies</span>
+              <p className="mt-0.5 text-[11px] text-latte/70">
+                {consentState === "accepted"
+                  ? "Accepting cookies allows saving your display name."
+                  : consentState === "declined"
+                    ? "Declined — only essential cookies are used."
+                    : "Not yet decided."}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCookieSettings(!showCookieSettings)}
+              className="rounded-lg border border-stone/50 px-3 py-1.5 text-xs font-medium text-bean transition-all hover:bg-cream/50"
+            >
+              {consentState ? "Change" : "Set preferences"}
+            </button>
+          </div>
+
+          {showCookieSettings && (
+            <div className="rounded-lg border border-cafe/15 bg-marble p-4 animate-fade-in">
+              <p className="mb-3 text-xs leading-relaxed text-latte">
+                Choose whether to accept non-essential cookies for local preferences like your display name.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAcceptCookies}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                    consentState === "accepted"
+                      ? "bg-espresso text-ivory"
+                      : "border border-stone/50 text-bean hover:bg-cream/50"
+                  }`}
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={handleDeclineCookies}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                    consentState === "declined"
+                      ? "bg-espresso text-ivory"
+                      : "border border-stone/50 text-bean hover:bg-cream/50"
+                  }`}
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <button
         onClick={handleSignOut}
         className="mt-6 w-full rounded-xl border border-stone/50 bg-ivory px-4 py-3 text-sm font-medium text-bean transition-all hover:border-espresso/40 hover:bg-cream/50"

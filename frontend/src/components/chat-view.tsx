@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useConversations } from "@/lib/conversation-context";
 import { ChatInput } from "@/components/chat-input";
@@ -23,6 +23,8 @@ export function ChatView() {
   const { user } = useAuth();
   const { activeConversation, sendMessage, createConversation } = useConversations();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isUserNearBottomRef = useRef(true);
 
   const isThinking = useMemo(() => {
     if (!activeConversation) return false;
@@ -30,14 +32,32 @@ export function ChatView() {
     return msgs.length > 0 && msgs[msgs.length - 1].role === "user";
   }, [activeConversation]);
 
+  const messageCount = activeConversation?.messages.length ?? 0;
+
+  const checkIfNearBottom = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const threshold = 120;
+    isUserNearBottomRef.current =
+      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+  }, []);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeConversation?.messages, isThinking]);
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    container.addEventListener("scroll", checkIfNearBottom, { passive: true });
+    return () => container.removeEventListener("scroll", checkIfNearBottom);
+  }, [checkIfNearBottom]);
+
+  useEffect(() => {
+    if (isUserNearBottomRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messageCount, isThinking]);
 
   function handleSend(content: string) {
     if (!activeConversation) {
       createConversation();
-      // Small delay so state propagates, then send
       setTimeout(() => sendMessage(content), 0);
     } else {
       sendMessage(content);
@@ -49,10 +69,9 @@ export function ChatView() {
 
   return (
     <div className="flex h-full flex-col">
-      <main className="flex-1 overflow-y-auto">
+      <main ref={scrollContainerRef} className="flex-1 overflow-y-auto">
         {showEmpty ? (
           <div className="flex h-full flex-col">
-            {/* Greeting */}
             <div className="px-4 pt-8 pb-2 sm:px-6 md:pt-12">
               <h2 className="text-2xl font-semibold text-espresso sm:text-3xl">
                 {getGreeting()}, {displayName}
@@ -60,18 +79,25 @@ export function ChatView() {
               <p className="mt-1 text-sm text-latte">
                 What can I get for you today?
               </p>
-              <div className="mt-4 h-px bg-gradient-to-r from-espresso/20 via-espresso/10 to-transparent" />
+              <div className="mt-4 h-px bg-gradient-to-r from-cafe/20 via-cafe/10 to-transparent" />
             </div>
             <EmptyState onSuggestionClick={handleSend} />
           </div>
         ) : (
           <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-cafe/15" />
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-cafe/40">
+                Table 01 · Grounded
+              </span>
+              <div className="h-px flex-1 bg-cafe/15" />
+            </div>
             <div className="space-y-6">
               {activeConversation!.messages.map((msg, i) => (
                 <div
                   key={i}
                   className="animate-fade-in"
-                  style={{ animationDelay: `${i * 50}ms` }}
+                  style={{ animationDelay: `${Math.min(i * 30, 150)}ms` }}
                 >
                   <MessageBubble role={msg.role} content={msg.content} />
                 </div>

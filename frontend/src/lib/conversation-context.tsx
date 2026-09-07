@@ -37,13 +37,15 @@ export interface Conversation {
 interface ConversationContextValue {
   conversations: Conversation[];
   loading: boolean;
+  error: string | null;
   activeConversationId: string | null;
   activeConversation: Conversation | undefined;
   createConversation: () => string;
   setActiveConversation: (id: string | null) => void;
   sendMessage: (content: string) => void;
-  deleteConversation: (id: string) => void;
-  renameConversation: (id: string, newTitle: string) => void;
+  deleteConversation: (id: string) => Promise<void>;
+  renameConversation: (id: string, newTitle: string) => Promise<void>;
+  clearError: () => void;
 }
 
 const ConversationContext = createContext<ConversationContextValue | null>(null);
@@ -87,40 +89,45 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const activeIdRef = useRef<string | null>(null);
 
-  // Keep ref in sync with state via effect
   useEffect(() => {
     activeIdRef.current = activeConversationId;
   }, [activeConversationId]);
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
 
-  // Clear state when user signs out
-  useEffect(() => {
-    if (user) return;
-    setConversations([]);
-    setLoading(false);
-  }, [user]);
+  const prevUserRef = useRef(user);
 
-  // Subscribe to user's conversations from Firestore
   useEffect(() => {
+    const prevUser = prevUserRef.current;
+    prevUserRef.current = user;
+
+    if (prevUser && !user) {
+      setConversations([]);
+      setActiveConversationId(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     if (!user) return;
 
-    // Clean up previous listener
     if (unsubscribeRef.current) {
       unsubscribeRef.current();
       unsubscribeRef.current = null;
     }
 
-    setLoading(true);
     const db = getFirebaseFirestore();
     const convQuery = query(
       collection(db, conversationsPath(user.uid)),
       orderBy("createdAt", "desc")
     );
+
+    let hasLoaded = false;
 
     const unsubscribe = onSnapshot(
       convQuery,
@@ -135,10 +142,15 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
           };
         });
         setConversations(convs);
-        setLoading(false);
+        if (!hasLoaded) {
+          hasLoaded = true;
+          setLoading(false);
+          setError(null);
+        }
       },
-      (error) => {
-        console.error("Firestore listener error:", error);
+      (err) => {
+        console.error("Firestore listener error:", err);
+        setError("Couldn't load your conversations. Please try again.");
         setLoading(false);
       }
     );
@@ -151,6 +163,8 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
     };
   }, [user]);
 
+  const clearError = useCallback(() => setError(null), []);
+
   const createConversation = useCallback(() => {
     if (!user) return "";
     const id = genId();
@@ -161,11 +175,9 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       createdAt: Date.now(),
     };
 
-    // Optimistic UI update
     setConversations((prev) => [conv, ...prev]);
     setActiveConversationId(id);
 
-    // Persist to Firestore
     const db = getFirebaseFirestore();
     setDoc(doc(db, conversationsPath(user.uid), id), {
       title: conv.title,
@@ -185,7 +197,6 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
 
       const userMsg: Message = { role: "user", content };
 
-      // Add user message to state immediately
       setConversations((prev) =>
         prev.map((c) => {
           if (c.id !== convId) return c;
@@ -194,7 +205,6 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         })
       );
 
-      // Simulate assistant response, then persist both messages
       setTimeout(() => {
         const assistantMsg: Message = {
           role: "assistant",
@@ -207,7 +217,6 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
             const newMessages = [...c.messages, userMsg, assistantMsg];
             const updatedConv = { ...c, messages: newMessages };
 
-            // Persist the full conversation to Firestore
             const db = getFirebaseFirestore();
             setDoc(doc(db, conversationsPath(user.uid), convId), {
               title: updatedConv.title,
@@ -227,42 +236,54 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
   );
 
   const deleteConversation = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      const prevConversations = conversations;
+      const wasActive = activeConversationId === id;
+
       setConversations((prev) => prev.filter((c) => c.id !== id));
-      if (activeConversationId === id) {
+      if (wasActive) {
         setActiveConversationId(null);
       }
 
-      // Delete from Firestore
       if (user) {
-        const db = getFirebaseFirestore();
-        deleteDoc(doc(db, conversationsPath(user.uid), id)).catch((err) => {
+        try {
+          const db = getFirebaseFirestore();
+          await deleteDoc(doc(db, conversationsPath(user.uid), id));
+        } catch (err) {
           console.error("Failed to delete conversation from Firestore:", err);
-        });
+          setConversations(prevConversations);
+          if (wasActive) {
+            setActiveConversationId(id);
+          }
+          setError("Couldn't delete this conversation. Please try again.");
+        }
       }
     },
-    [activeConversationId, user]
+    [activeConversationId, user, conversations]
   );
 
   const renameConversation = useCallback(
-    (id: string, newTitle: string) => {
+    async (id: string, newTitle: string) => {
       const trimmed = newTitle.trim() || "Untitled conversation";
+      const prevConversations = conversations;
 
-      // Update React state
       setConversations((prev) =>
         prev.map((c) => (c.id === id ? { ...c, title: trimmed } : c))
       );
 
-      // Persist to Firestore
       if (user) {
-        const db = getFirebaseFirestore();
-        const convRef = doc(db, conversationsPath(user.uid), id);
-        setDoc(convRef, { title: trimmed }, { merge: true }).catch((err) => {
+        try {
+          const db = getFirebaseFirestore();
+          const convRef = doc(db, conversationsPath(user.uid), id);
+          await setDoc(convRef, { title: trimmed }, { merge: true });
+        } catch (err) {
           console.error("Failed to rename conversation in Firestore:", err);
-        });
+          setConversations(prevConversations);
+          setError("Couldn't rename this conversation. Please try again.");
+        }
       }
     },
-    [user]
+    [user, conversations]
   );
 
   return (
@@ -270,6 +291,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       value={{
         conversations,
         loading,
+        error,
         activeConversationId,
         activeConversation,
         createConversation,
@@ -277,6 +299,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         sendMessage,
         deleteConversation,
         renameConversation,
+        clearError,
       }}
     >
       {children}

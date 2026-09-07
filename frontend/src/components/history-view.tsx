@@ -64,6 +64,7 @@ function RenameInput({
           if (e.key === "Escape") onCancel();
         }}
         className="min-w-0 flex-1 rounded-lg border border-espresso/40 bg-ivory px-2 py-1 text-sm text-bean focus:outline-none focus:ring-1 focus:ring-espresso/30"
+        aria-label="Rename conversation"
       />
     </form>
   );
@@ -73,6 +74,7 @@ export function HistoryView({ onSelect }: { onSelect: () => void }) {
   const {
     conversations,
     loading,
+    error,
     activeConversationId,
     setActiveConversation,
     deleteConversation,
@@ -105,17 +107,18 @@ export function HistoryView({ onSelect }: { onSelect: () => void }) {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full flex-col items-center justify-center gap-3">
         <div className="flex items-center gap-2 text-latte">
           <div className="h-1.5 w-1.5 rounded-full bg-espresso animate-pulse-dot" />
           <div className="h-1.5 w-1.5 rounded-full bg-espresso animate-pulse-dot" />
           <div className="h-1.5 w-1.5 rounded-full bg-espresso animate-pulse-dot" />
         </div>
+        <p className="text-xs text-latte/60">Loading history...</p>
       </div>
     );
   }
 
-  if (conversations.length === 0) {
+  if (error) {
     return (
       <div className="flex h-full flex-col items-center justify-center px-4 py-12 text-center">
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-espresso/10">
@@ -126,11 +129,36 @@ export function HistoryView({ onSelect }: { onSelect: () => void }) {
             stroke="currentColor"
             strokeWidth="1.5"
           >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4M12 16h.01" />
+          </svg>
+        </div>
+        <h2 className="mb-2 text-lg font-semibold text-espresso">
+          Couldn&apos;t load conversations
+        </h2>
+        <p className="max-w-sm text-sm text-latte">
+          Something went wrong. Please try again.
+        </p>
+      </div>
+    );
+  }
+
+  if (conversations.length === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center px-4 py-12 text-center">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-cafe/10">
+          <svg
+            className="h-8 w-8 text-espresso/60"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
             <path d="M12 8v4l3 3" />
             <circle cx="12" cy="12" r="10" />
           </svg>
         </div>
-        <h2 className="mb-2 text-2xl font-semibold text-espresso">
+        <h2 className="mb-2 text-xl font-semibold text-espresso">
           No conversations yet
         </h2>
         <p className="max-w-sm text-sm text-latte">
@@ -142,14 +170,14 @@ export function HistoryView({ onSelect }: { onSelect: () => void }) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
-      <h2 className="mb-6 text-lg font-semibold text-espresso uppercase tracking-wider text-xs">
+      <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.2em] text-espresso">
         Your Recent Tables
       </h2>
 
       <div className="space-y-6">
         {grouped.map((group) => (
           <div key={group.label}>
-            <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-latte/70">
+            <h3 className="mb-3 text-[10px] font-medium uppercase tracking-wider text-latte/60">
               {group.label}
             </h3>
             <div className="space-y-2">
