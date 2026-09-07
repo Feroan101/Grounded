@@ -1,0 +1,7 @@
+{
+  "firestore": {
+    "database": "grounded",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
