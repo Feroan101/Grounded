@@ -20,6 +20,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "./auth-context";
+import { useProfile } from "./profile-context";
 import { getFirebaseFirestore } from "./firebase";
 
 export interface Message {
@@ -87,16 +88,22 @@ function conversationsPath(uid: string) {
 
 export function ConversationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { conversationHistoryEnabled } = useProfile();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const activeIdRef = useRef<string | null>(null);
+  const historyEnabledRef = useRef(conversationHistoryEnabled);
 
   useEffect(() => {
     activeIdRef.current = activeConversationId;
   }, [activeConversationId]);
+
+  useEffect(() => {
+    historyEnabledRef.current = conversationHistoryEnabled;
+  }, [conversationHistoryEnabled]);
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
 
@@ -178,14 +185,16 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
     setConversations((prev) => [conv, ...prev]);
     setActiveConversationId(id);
 
-    const db = getFirebaseFirestore();
-    setDoc(doc(db, conversationsPath(user.uid), id), {
-      title: conv.title,
-      messages: conv.messages,
-      createdAt: serverTimestamp(),
-    }).catch((err) => {
-      console.error("Failed to create conversation in Firestore:", err);
-    });
+    if (historyEnabledRef.current) {
+      const db = getFirebaseFirestore();
+      setDoc(doc(db, conversationsPath(user.uid), id), {
+        title: conv.title,
+        messages: conv.messages,
+        createdAt: serverTimestamp(),
+      }).catch((err) => {
+        console.error("Failed to create conversation in Firestore:", err);
+      });
+    }
 
     return id;
   }, [user]);
@@ -217,14 +226,16 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
             const newMessages = [...c.messages, userMsg, assistantMsg];
             const updatedConv = { ...c, messages: newMessages };
 
-            const db = getFirebaseFirestore();
-            setDoc(doc(db, conversationsPath(user.uid), convId), {
-              title: updatedConv.title,
-              messages: updatedConv.messages,
-              createdAt: serverTimestamp(),
-            }).catch((err) => {
-              console.error("Failed to save conversation to Firestore:", err);
-            });
+            if (historyEnabledRef.current) {
+              const db = getFirebaseFirestore();
+              setDoc(doc(db, conversationsPath(user.uid), convId), {
+                title: updatedConv.title,
+                messages: updatedConv.messages,
+                createdAt: serverTimestamp(),
+              }).catch((err) => {
+                console.error("Failed to save conversation to Firestore:", err);
+              });
+            }
 
             return updatedConv;
           });
