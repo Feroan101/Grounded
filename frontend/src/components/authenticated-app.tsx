@@ -349,12 +349,12 @@ function MobileBottomNav({
 
 export function AuthenticatedApp() {
   const [activeSection, setActiveSection] = useState<Section>("chat");
-  const { createConversation, error, clearError } = useConversations();
+  const { startNewChat, error, clearError } = useConversations();
 
   const handleNewChat = useCallback(() => {
-    createConversation();
+    startNewChat();
     setActiveSection("chat");
-  }, [createConversation]);
+  }, [startNewChat]);
 
   const handleNavigate = useCallback((s: Section) => {
     setActiveSection(s);
@@ -365,7 +365,7 @@ export function AuthenticatedApp() {
   }, []);
 
   return (
-    <div className="flex h-screen flex-col marble-bg marble-veins md:flex-row">
+    <div className="flex h-dvh flex-col overflow-hidden marble-bg marble-veins md:h-screen md:flex-row md:overflow-visible">
       <SidebarNav
         activeSection={activeSection}
         onNavigate={handleNavigate}
@@ -373,7 +373,7 @@ export function AuthenticatedApp() {
       />
       <MobileHeader activeSection={activeSection} onNewChat={handleNewChat} />
 
-      <main className="flex-1 overflow-hidden">
+      <main className="min-h-0 flex-1 overflow-hidden">
         {activeSection === "chat" && <ChatView />}
         {activeSection === "history" && <HistoryView onSelect={handleHistorySelect} />}
         {activeSection === "profile" && <ProfileView />}

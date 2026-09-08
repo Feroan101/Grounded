@@ -41,7 +41,7 @@ interface ConversationContextValue {
   error: string | null;
   activeConversationId: string | null;
   activeConversation: Conversation | undefined;
-  createConversation: () => string;
+  startNewChat: () => void;
   setActiveConversation: (id: string | null) => void;
   sendMessage: (content: string) => void;
   deleteConversation: (id: string) => Promise<void>;
@@ -172,45 +172,58 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => setError(null), []);
 
-  const createConversation = useCallback(() => {
-    if (!user) return "";
-    const id = genId();
-    const conv: Conversation = {
-      id,
-      title: "New conversation",
-      messages: [],
-      createdAt: Date.now(),
-    };
+  const startNewChat = useCallback(() => {
+    activeIdRef.current = null;
+    setActiveConversationId(null);
+  }, []);
 
-    setConversations((prev) => [conv, ...prev]);
-    setActiveConversationId(id);
-
-    if (historyEnabledRef.current) {
+  const persistConversation = useCallback(
+    (id: string, title: string, messages: Message[]) => {
+      if (!user || !historyEnabledRef.current) return;
       const db = getFirebaseFirestore();
       setDoc(doc(db, conversationsPath(user.uid), id), {
-        title: conv.title,
-        messages: conv.messages,
+        title,
+        messages,
         createdAt: serverTimestamp(),
       }).catch((err) => {
-        console.error("Failed to create conversation in Firestore:", err);
+        console.error("Failed to save conversation to Firestore:", err);
       });
-    }
-
-    return id;
-  }, [user]);
+    },
+    [user]
+  );
 
   const sendMessage = useCallback(
     (content: string) => {
-      const convId = activeIdRef.current;
-      if (!convId || !user) return;
+      if (!user) return;
 
       const userMsg: Message = { role: "user", content };
+
+      let convId = activeIdRef.current;
+
+      if (!convId) {
+        convId = genId();
+        const conv: Conversation = {
+          id: convId,
+          title: "New conversation",
+          messages: [],
+          createdAt: Date.now(),
+        };
+        setConversations((prev) => [conv, ...prev]);
+        setActiveConversationId(convId);
+        activeIdRef.current = convId;
+        persistConversation(convId, deriveTitle([userMsg]), [userMsg]);
+      }
 
       setConversations((prev) =>
         prev.map((c) => {
           if (c.id !== convId) return c;
           const newMessages = [...c.messages, userMsg];
-          return { ...c, title: deriveTitle(newMessages), messages: newMessages };
+          const updatedConv = {
+            ...c,
+            title: deriveTitle(newMessages),
+            messages: newMessages,
+          };
+          return updatedConv;
         })
       );
 
@@ -220,30 +233,23 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
           content: fakeAssistantResponse(),
         };
 
-        setConversations((prev) => {
-          const updated = prev.map((c) => {
+        setConversations((prev) =>
+          prev.map((c) => {
             if (c.id !== convId) return c;
-            const newMessages = [...c.messages, userMsg, assistantMsg];
-            const updatedConv = { ...c, messages: newMessages };
+            return { ...c, messages: [...c.messages, assistantMsg] };
+          })
+        );
 
-            if (historyEnabledRef.current) {
-              const db = getFirebaseFirestore();
-              setDoc(doc(db, conversationsPath(user.uid), convId), {
-                title: updatedConv.title,
-                messages: updatedConv.messages,
-                createdAt: serverTimestamp(),
-              }).catch((err) => {
-                console.error("Failed to save conversation to Firestore:", err);
-              });
-            }
-
-            return updatedConv;
-          });
-          return updated;
+        setConversations((prev) => {
+          const target = prev.find((c) => c.id === convId);
+          if (target) {
+            persistConversation(convId, target.title, target.messages);
+          }
+          return prev;
         });
       }, 1500);
     },
-    [user]
+    [user, persistConversation]
   );
 
   const deleteConversation = useCallback(
@@ -305,7 +311,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         error,
         activeConversationId,
         activeConversation,
-        createConversation,
+        startNewChat,
         setActiveConversation: setActiveConversationId,
         sendMessage,
         deleteConversation,

@@ -51,7 +51,7 @@ function SectionCard({
           <p className="mt-2 text-xs text-latte/70 line-clamp-1">{summary}</p>
         )}
       </div>
-      <ChevronRightIcon className="mt-1 flex-shrink-0 text-latte/40 transition-colors group-hover:text-espresso/60" />
+      <ChevronRightIcon className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-latte/40 transition-colors group-hover:text-espresso/60" />
     </button>
   );
 }

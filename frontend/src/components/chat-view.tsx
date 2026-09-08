@@ -21,7 +21,7 @@ function hasActiveMessages(conv: { messages: { role: string }[] } | undefined): 
 
 export function ChatView() {
   const { user } = useAuth();
-  const { activeConversation, sendMessage, createConversation } = useConversations();
+  const { activeConversation, sendMessage } = useConversations();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isUserNearBottomRef = useRef(true);
@@ -56,12 +56,7 @@ export function ChatView() {
   }, [messageCount, isThinking]);
 
   function handleSend(content: string) {
-    if (!activeConversation) {
-      createConversation();
-      setTimeout(() => sendMessage(content), 0);
-    } else {
-      sendMessage(content);
-    }
+    sendMessage(content);
   }
 
   const displayName = user?.displayName?.split(" ")[0] || "there";
@@ -69,7 +64,7 @@ export function ChatView() {
 
   return (
     <div className="flex h-full flex-col">
-      <main ref={scrollContainerRef} className="flex-1 overflow-y-auto">
+      <main ref={scrollContainerRef} className="min-h-0 flex-1 overflow-y-auto">
         {showEmpty ? (
           <div className="flex h-full flex-col">
             <div className="px-4 pt-8 pb-2 sm:px-6 md:pt-12">

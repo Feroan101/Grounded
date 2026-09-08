@@ -164,3 +164,14 @@ button, [role="button"] {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* Dynamic viewport height utility */
+.h-dvh {
+  height: 100dvh;
+}
+
+@supports not (height: 100dvh) {
+  .h-dvh {
+    height: 100vh;
+  }
+}

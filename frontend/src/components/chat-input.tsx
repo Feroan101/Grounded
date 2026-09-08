@@ -44,8 +44,8 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="border-t border-cafe/15 bg-marble/80 backdrop-blur-md">
-      <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6 sm:py-4">
+    <div className="flex flex-shrink-0 border-t border-cafe/15 bg-marble/80 backdrop-blur-md">
+      <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6 sm:py-4 lg:max-w-5xl">
         <form onSubmit={handleSubmit} className="relative">
           <div className="flex items-end gap-2 rounded-2xl border border-cafe/20 bg-ivory p-2 shadow-sm transition-all focus-within:border-cafe/40 focus-within:shadow-md focus-within:ring-1 focus-within:ring-cafe/10">
             <textarea
