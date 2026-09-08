@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase";
 
-// Design system colors from DESIGN.md
 const BEAN = "#2B1B15";
 const ESPRESSO = "#4A2C20";
 const LATTE = "#8B6B57";
@@ -51,18 +50,17 @@ const QUOTES: { text: string; author: string }[] = [
   { text: "Grounded is the only place where doing nothing feels productive.", author: "The Professional Idler" },
 ];
 
-// Post-it paper colors — warm, slightly desaturated, café-compatible
 const PAPER_COLORS = [
-  "#F5E6A3", // soft yellow
-  "#F2D8A8", // warm cream
-  "#E8C4A0", // muted peach
-  "#D4A9A0", // dusty pink
-  "#B8C5A8", // soft sage
-  "#D6C9B0", // warm beige
-  "#A8B8C4", // muted blue
-  "#C9A88C", // light terracotta
-  "#E0D0B8", // parchment
-  "#F0DCC0", // vanilla
+  "#F5E6A3",
+  "#F2D8A8",
+  "#E8C4A0",
+  "#D4A9A0",
+  "#B8C5A8",
+  "#D6C9B0",
+  "#A8B8C4",
+  "#C9A88C",
+  "#E0D0B8",
+  "#F0DCC0",
 ];
 
 type Decoration = "pin" | "tape" | "none";
@@ -91,7 +89,6 @@ function pickDecoration(): Decoration {
   return decos[Math.floor(Math.random() * decos.length)];
 }
 
-// Desktop configs — scattered across left side
 function pickDesktopNotes(count: number): { text: string; author: string; config: NoteConfig }[] {
   const rotations = [-5, 4, -3, 3, -2, 2, -4, 5, -1, 1];
   const configs: NoteConfig[] = [
@@ -118,33 +115,6 @@ function pickDesktopNotes(count: number): { text: string; author: string; config
       rotation: rotations[Math.floor(Math.random() * rotations.length)],
       decoration: pickDecoration(),
       bgColor: shuffledColors[i % shuffledColors.length],
-    },
-  }));
-}
-
-// Mobile configs — exactly 3 notes in left/right/left pattern
-function pickMobileNotes(): { text: string; author: string; config: NoteConfig }[] {
-  const rotations = [-4, 3, -2, 2, -3, 4];
-  const shuffledQuotes = shuffle(QUOTES);
-  const shuffledColors = shuffle(PAPER_COLORS);
-
-  // Left/right/left pattern with randomized sizes and positions within zones
-  const noteConfigs: { zone: "left" | "right"; width: string; height: string }[] = [
-    { zone: "left", width: "w-40", height: "min-h-[95px]" },
-    { zone: "right", width: "w-44", height: "min-h-[100px]" },
-    { zone: "left", width: "w-36", height: "min-h-[85px]" },
-  ];
-
-  return noteConfigs.map((cfg, i) => ({
-    ...shuffledQuotes[i],
-    config: {
-      rotation: rotations[Math.floor(Math.random() * rotations.length)],
-      left: cfg.zone === "left" ? "5%" : "52%",
-      width: cfg.width,
-      height: cfg.height,
-      zIndex: 20 - i * 2,
-      decoration: pickDecoration(),
-      bgColor: shuffledColors[i],
     },
   }));
 }
@@ -264,9 +234,19 @@ function TermsModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function GoogleIcon() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    </svg>
+  );
+}
+
 export function LandingPage() {
   const desktopNotes = useMemo(() => pickDesktopNotes(9), []);
-  const mobileNotes = useMemo(() => pickMobileNotes(), []);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -285,126 +265,156 @@ export function LandingPage() {
   }
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
-      {/* Background image — full bleed */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${COFFEE_SHOP_IMAGE})` }}
-      />
-
-      {/* Diagonal overlay — black tones (desktop) */}
-      <div
-        className="absolute inset-0 hidden md:block"
-        style={{
-          background: `
-            linear-gradient(
-              115deg,
-              transparent 0%,
-              transparent 35%,
-              rgba(0,0,0,0.08) 40%,
-              rgba(0,0,0,0.25) 48%,
-              rgba(0,0,0,0.5) 55%,
-              rgba(0,0,0,0.72) 62%,
-              rgba(0,0,0,0.85) 70%,
-              rgba(0,0,0,0.92) 80%,
-              rgba(0,0,0,0.95) 100%
-            )
-          `,
-        }}
-      />
-
-      {/* Mobile overlay — bottom-to-top gradient, pitch black at bottom */}
-      <div
-        className="absolute inset-0 md:hidden"
-        style={{
-          background: `linear-gradient(to top,
-            rgba(0,0,0,1) 0%,
-            rgba(0,0,0,0.98) 15%,
-            rgba(0,0,0,0.9) 30%,
-            rgba(0,0,0,0.7) 45%,
-            rgba(0,0,0,0.4) 60%,
-            rgba(0,0,0,0.15) 75%,
-            transparent 100%
-          )`,
-        }}
-      />
-
-      {/* Subtle blur on the right side via gradient mask — desktop only */}
-      <div
-        className="absolute inset-0 backdrop-blur-[2px] hidden md:block"
-        style={{
-          maskImage:
-            "linear-gradient(115deg, transparent 0%, transparent 30%, black 50%, black 100%)",
-          WebkitMaskImage:
-            "linear-gradient(115deg, transparent 0%, transparent 30%, black 50%, black 100%)",
-        }}
-      />
-
-      {/* Bottom vignette — desktop only */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent hidden md:block" />
-
-      {/* ===== DESKTOP NOTICE BOARD — left side ===== */}
-      <div className="absolute inset-0 z-10 hidden md:block">
-        {/* Board heading */}
+    <div className="relative min-h-screen w-screen">
+      {/* ===== MOBILE: centered login over café background ===== */}
+      <div className="relative min-h-screen w-screen md:hidden">
+        {/* Background image */}
         <div
-          className="absolute"
-          style={{ left: "4%", top: "2%", zIndex: 40 }}
-        >
-          <div
-            className="px-3 py-1.5 rounded"
-            style={{ background: `rgba(74,44,32,0.8)` }}
-          >
-            <span
-              className="text-[10px] font-semibold tracking-[0.2em] uppercase"
-              style={{ color: CREAM }}
-            >
-              Notes from the Neighbourhood
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${COFFEE_SHOP_IMAGE})` }}
+        />
+
+        {/* Dark overlay for readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "rgba(0,0,0,0.7)",
+          }}
+        />
+
+        {/* Login content */}
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-6">
+        <div className="flex w-full max-w-[300px] flex-col items-center text-center">
+          <p className="mb-2 text-[10px] tracking-wide" style={{ color: `${LATTE}B0` }}>
+            made by <a href="https://github.com/Feroan101" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: MARBLE }}>@feroan101</a>
+          </p>
+          <div className="mb-5 flex items-center gap-3">
+            <img
+              src="/coffee-logo.png"
+              alt="Grounded logo"
+              className="h-10 w-10 rounded-xl object-cover"
+            />
+            <span className="text-sm font-semibold tracking-widest uppercase" style={{ color: MARBLE }}>
+              Grounded
             </span>
           </div>
+
+          <h1
+            className="mb-1 text-2xl font-semibold tracking-tight"
+            style={{ color: MARBLE }}
+          >
+            Pull up a chair.
+          </h1>
+          <p
+            className="mb-8 text-sm"
+            style={{ color: LATTE }}
+          >
+            Your workspace is waiting.
+          </p>
+
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={!termsAccepted || isSigningIn}
+            className="flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg"
+            style={{ background: IVORY, color: BEAN }}
+          >
+            <GoogleIcon />
+            Continue with Google
+          </button>
+
+          <label className="mt-4 flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="h-3.5 w-3.5 shrink-0 cursor-pointer"
+              style={{ accentColor: ESPRESSO }}
+            />
+            <span className="text-[11px] leading-tight" style={{ color: LATTE }}>
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTermsModal(true); }}
+                className="underline transition-colors"
+                style={{ color: MARBLE }}
+              >
+                Terms &amp; Conditions
+              </button>
+            </span>
+          </label>
+
+          <p
+            className="mt-5 text-[11px]"
+            style={{ color: LATTE }}
+          >
+            Sign in to access your personalized coffee assistant.
+          </p>
         </div>
 
-        {/* Desktop notes */}
-        {desktopNotes.map((note, i) => (
-          <div
-            key={i}
-            className="absolute"
-            style={{
-              left: note.config.left,
-              top: ["8%", "6%", "12%", "26%", "30%", "48%", "52%", "68%", "72%"][i],
-              zIndex: note.config.zIndex,
-            }}
-          >
-            <NoteCard note={note} />
-          </div>
-        ))}
+        </div>
       </div>
 
-      {/* ===== MOBILE NOTICE BOARD ===== */}
-      <div className="relative z-10 flex flex-col md:hidden min-h-screen">
-        {/* Title — always first */}
-        <div className="px-4 pt-5 pb-3">
-          <div
-            className="inline-block px-3 py-1.5 rounded"
-            style={{ background: `rgba(74,44,32,0.8)` }}
-          >
-            <span
-              className="text-[10px] font-semibold tracking-[0.2em] uppercase"
-              style={{ color: CREAM }}
-            >
-              Notes from the Neighbourhood
-            </span>
-          </div>
-        </div>
+      {/* ===== DESKTOP: existing layout (unchanged) ===== */}
+      <div className="relative hidden h-screen w-screen overflow-hidden md:block">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${COFFEE_SHOP_IMAGE})` }}
+        />
 
-        {/* Notes — exactly 3, left/right/left pattern */}
-        <div className="flex-1 flex flex-col justify-start gap-5 px-4 pt-2">
-          {mobileNotes.map((note, i) => (
+        {/* Diagonal overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(
+                115deg,
+                transparent 0%,
+                transparent 35%,
+                rgba(0,0,0,0.08) 40%,
+                rgba(0,0,0,0.25) 48%,
+                rgba(0,0,0,0.5) 55%,
+                rgba(0,0,0,0.72) 62%,
+                rgba(0,0,0,0.85) 70%,
+                rgba(0,0,0,0.92) 80%,
+                rgba(0,0,0,0.95) 100%
+              )
+            `,
+          }}
+        />
+
+        {/* Blur on right side */}
+        <div
+          className="absolute inset-0 backdrop-blur-[2px]"
+          style={{
+            maskImage:
+              "linear-gradient(115deg, transparent 0%, transparent 30%, black 50%, black 100%)",
+            WebkitMaskImage:
+              "linear-gradient(115deg, transparent 0%, transparent 30%, black 50%, black 100%)",
+          }}
+        />
+
+        {/* Bottom vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+        {/* Notice board — left side */}
+        <div className="absolute inset-0 z-10">
+          <div className="absolute" style={{ left: "4%", top: "2%", zIndex: 40 }}>
+            <div className="px-3 py-1.5 rounded" style={{ background: `rgba(74,44,32,0.8)` }}>
+              <span className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: CREAM }}>
+                Notes from the Neighbourhood
+              </span>
+            </div>
+          </div>
+
+          {desktopNotes.map((note, i) => (
             <div
               key={i}
-              className={i === 0 || i === 2 ? "self-start" : "self-end"}
+              className="absolute"
               style={{
+                left: note.config.left,
+                top: ["8%", "6%", "12%", "26%", "30%", "48%", "52%", "68%", "72%"][i],
                 zIndex: note.config.zIndex,
-                maxWidth: "55%",
               }}
             >
               <NoteCard note={note} />
@@ -412,209 +422,79 @@ export function LandingPage() {
           ))}
         </div>
 
-        {/* Bottom safe area — centered credit + auth */}
-        <div className="max-md:pb-5 max-md:pt-4 pb-8 pt-6 px-6 flex flex-col items-center">
-          {/* Creator credit — centered */}
-          <p
-            className="text-[10px] max-md:mb-3 mb-5 text-center"
-            style={{ color: `${LATTE}B0` }}
-          >
-            made by <a href="https://github.com/Feroan101" target="_blank" rel="noopener noreferrer" style={{ color: `${CREAM}D0` }} className="hover:underline">@feroan101</a>
-          </p>
+        {/* Auth area — right side */}
+        <div className="absolute inset-y-0 right-0 z-20 flex items-center justify-end pr-20 lg:pr-28 w-1/2">
+          <div className="w-full max-w-md px-0 pb-8 pt-4">
+            <div className="mb-6 flex items-center gap-3 sm:mb-8">
+              <img
+                src="/coffee-logo.png"
+                alt="Grounded logo"
+                className="h-10 w-10 rounded-xl object-cover"
+              />
+              <span className="text-sm font-semibold tracking-widest uppercase" style={{ color: MARBLE }}>
+                Grounded
+              </span>
+            </div>
 
-          {/* Logo mark */}
-          <div className="max-md:mb-3 mb-4 flex items-center gap-3">
-            <img
-              src="/coffee-logo.png"
-              alt="Grounded logo"
-              className="h-10 w-10 rounded-xl object-cover"
-            />
-            <span
-              className="text-sm font-semibold tracking-widest uppercase"
-              style={{ color: MARBLE }}
+            <h1 className="mb-3 text-3xl font-semibold tracking-tight sm:text-4xl" style={{ color: MARBLE }}>
+              Pull up a chair.
+            </h1>
+            <p className="mb-8 text-base sm:mb-10" style={{ color: LATTE }}>
+              Your workspace is waiting.
+            </p>
+
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={!termsAccepted || isSigningIn}
+              className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg"
+              style={{ background: IVORY, color: BEAN }}
             >
-              Grounded
-            </span>
+              <GoogleIcon />
+              Continue with Google
+            </button>
+
+            <label className="mt-2.5 flex items-center gap-1.5 cursor-pointer select-none md:mt-3 md:px-3 md:py-1.5">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="h-[14px] w-[14px] shrink-0 cursor-pointer"
+                style={{ accentColor: ESPRESSO }}
+              />
+              <span className="text-[11px] leading-tight" style={{ color: `${LATTE}B0` }}>
+                I agree to the{" "}
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTermsModal(true); }}
+                  className="underline transition-colors hover:text-marble"
+                  style={{ color: `${CREAM}B0` }}
+                >
+                  Terms &amp; Conditions
+                </button>
+              </span>
+            </label>
+
+            <p className="mt-6 text-center text-xs" style={{ color: LATTE }}>
+              Sign in to access your personalized coffee assistant.
+            </p>
           </div>
+        </div>
 
-          {/* Heading */}
-          <h1
-            className="max-md:mb-1 mb-2 text-2xl font-semibold tracking-tight"
-            style={{ color: MARBLE }}
-          >
-            Welcome back.
-          </h1>
-          <p
-            className="max-md:mb-4 mb-6 text-sm"
-            style={{ color: LATTE }}
-          >
-            Your workspace is waiting.
-          </p>
-
-          {/* Sign-in button */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={!termsAccepted || isSigningIn}
-            className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg"
-            style={{
-              background: IVORY,
-              color: BEAN,
-            }}
-          >
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            Continue with Google
-          </button>
-
-          <label className="mt-2 flex items-center justify-center gap-1.5 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              className="h-[14px] w-[14px] shrink-0 cursor-pointer"
-              style={{ accentColor: ESPRESSO }}
-            />
-            <span className="text-[11px] leading-tight" style={{ color: `${LATTE}B0` }}>
-              I agree to the{" "}
-              <button
-                type="button"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTermsModal(true); }}
-                className="underline transition-colors hover:text-marble"
-                style={{ color: `${CREAM}B0` }}
-              >
-                Terms &amp; Conditions
-              </button>
-            </span>
-          </label>
-
-          {/* Subtle note */}
-          <p
-            className="max-md:mt-2 mt-4 text-center text-[11px]"
-            style={{ color: LATTE }}
-          >
-            Sign in to access your personalized coffee assistant.
+        {/* Creator signature — bottom left */}
+        <div className="absolute bottom-4 left-4 z-10">
+          <p className="text-[11px]" style={{ color: `${LATTE}B0` }}>
+            made by{" "}
+            <a
+              href="https://github.com/Feroan101"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: `${CREAM}D0` }}
+              className="hover:underline"
+            >
+              @feroan101
+            </a>
           </p>
         </div>
-      </div>
-
-      {/* ===== DESKTOP AUTHENTICATION AREA ===== */}
-      <div className="absolute inset-y-0 right-0 z-20 hidden md:flex md:items-center md:justify-end md:pr-20 lg:pr-28 md:w-1/2">
-        <div className="w-full max-w-md px-6 pb-8 pt-4 md:px-0 md:pb-0">
-          {/* Logo mark */}
-          <div className="mb-6 flex items-center gap-3 sm:mb-8">
-            <img
-              src="/coffee-logo.png"
-              alt="Grounded logo"
-              className="h-10 w-10 rounded-xl object-cover"
-            />
-            <span
-              className="text-sm font-semibold tracking-widest uppercase"
-              style={{ color: MARBLE }}
-            >
-              Grounded
-            </span>
-          </div>
-
-          {/* Heading */}
-          <h1
-            className="mb-3 text-3xl font-semibold tracking-tight sm:text-4xl"
-            style={{ color: MARBLE }}
-          >
-            Welcome back.
-          </h1>
-          <p
-            className="mb-8 text-base sm:mb-10"
-            style={{ color: LATTE }}
-          >
-            Your workspace is waiting.
-          </p>
-
-          {/* Sign-in button */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={!termsAccepted || isSigningIn}
-            className="group flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-lg"
-            style={{
-              background: IVORY,
-              color: BEAN,
-            }}
-          >
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            Continue with Google
-          </button>
-
-          <label className="mt-2.5 flex items-center gap-1.5 cursor-pointer select-none md:mt-3 md:px-3 md:py-1.5">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              className="h-[14px] w-[14px] shrink-0 cursor-pointer"
-              style={{ accentColor: ESPRESSO }}
-            />
-            <span className="text-[11px] leading-tight" style={{ color: `${LATTE}B0` }}>
-              I agree to the{" "}
-              <button
-                type="button"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTermsModal(true); }}
-                className="underline transition-colors hover:text-marble"
-                style={{ color: `${CREAM}B0` }}
-              >
-                Terms &amp; Conditions
-              </button>
-            </span>
-          </label>
-
-          {/* Subtle note */}
-          <p
-            className="mt-6 text-center text-xs"
-            style={{ color: LATTE }}
-          >
-            Sign in to access your personalized coffee assistant.
-          </p>
-        </div>
-      </div>
-
-      {/* Creator signature — desktop only, bottom left */}
-      <div className="absolute bottom-4 left-4 z-10 hidden md:block">
-        <p
-          className="text-[11px]"
-          style={{ color: `${LATTE}B0` }}
-        >
-          made by <a href="https://github.com/Feroan101" target="_blank" rel="noopener noreferrer" style={{ color: `${CREAM}D0` }} className="hover:underline">@feroan101</a>
-        </p>
       </div>
 
       {showTermsModal && <TermsModal onClose={() => setShowTermsModal(false)} />}

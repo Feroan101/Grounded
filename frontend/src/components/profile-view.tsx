@@ -102,7 +102,7 @@ export function ProfileView() {
         </h3>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-sm">
+          <div className="text-sm">
             <span className="text-bean">Name</span>
             {isEditing ? (
               <form
@@ -110,7 +110,7 @@ export function ProfileView() {
                   e.preventDefault();
                   handleSave();
                 }}
-                className="flex items-center gap-2"
+                className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center"
               >
                 <input
                   autoFocus
@@ -119,22 +119,24 @@ export function ProfileView() {
                   onKeyDown={(e) => {
                     if (e.key === "Escape") setIsEditing(false);
                   }}
-                  className="w-40 rounded-lg border border-espresso/40 bg-marble px-2 py-1 text-sm text-bean focus:outline-none focus:ring-1 focus:ring-espresso/30"
+                  className="w-full shrink-0 rounded-lg border border-espresso/40 bg-marble px-2 py-1 text-sm text-bean focus:outline-none focus:ring-1 focus:ring-espresso/30 sm:w-40"
                   aria-label="Display name"
                 />
-                <button
-                  type="submit"
-                  className="rounded-lg bg-espresso px-2.5 py-1 text-xs font-medium text-ivory hover:bg-espresso/90"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="rounded-lg border border-stone/50 px-2.5 py-1 text-xs font-medium text-bean hover:bg-cream/50"
-                >
-                  Cancel
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="flex-1 rounded-lg bg-espresso px-2.5 py-1 text-xs font-medium text-ivory hover:bg-espresso/90 sm:flex-initial"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="flex-1 rounded-lg border border-stone/50 px-2.5 py-1 text-xs font-medium text-bean hover:bg-cream/50 sm:flex-initial"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </form>
             ) : (
               <button
@@ -151,9 +153,9 @@ export function ProfileView() {
               </button>
             )}
           </div>
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between gap-2 text-sm">
             <span className="text-bean">Email</span>
-            <span className="text-latte">{user?.email || "—"}</span>
+            <span className="shrink-0 truncate text-right text-latte">{user?.email || "—"}</span>
           </div>
         </div>
       </div>
@@ -164,7 +166,7 @@ export function ProfileView() {
         </h3>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
             <div>
               <span className="text-bean">Cookies</span>
               <p className="mt-0.5 text-[11px] text-latte/70">
@@ -177,7 +179,7 @@ export function ProfileView() {
             </div>
             <button
               onClick={() => setShowCookieSettings(!showCookieSettings)}
-              className="rounded-lg border border-stone/50 px-3 py-1.5 text-xs font-medium text-bean transition-all hover:bg-cream/50"
+              className="shrink-0 self-start rounded-lg border border-stone/50 px-3 py-1.5 text-xs font-medium text-bean transition-all hover:bg-cream/50"
             >
               {consentState ? "Change" : "Set preferences"}
             </button>
