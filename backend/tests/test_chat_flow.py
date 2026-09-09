@@ -22,6 +22,10 @@ class _FakeModel:
         self.calls = 0
         self.last_messages = None
 
+    def bind_tools(self, tools):
+        self.bound_tools = tools
+        return self
+
     def invoke(self, messages):
         self.calls += 1
         self.last_messages = messages
@@ -141,6 +145,9 @@ def test_chat_rejects_last_message_not_user(monkeypatch):
 
 def test_gemini_failure_returns_502(monkeypatch):
     class _BoomModel:
+        def bind_tools(self, tools):
+            return self
+
         def invoke(self, messages):
             raise RuntimeError("upstream exploded")
 

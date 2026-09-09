@@ -49,6 +49,10 @@ class GeminiChatModel:
     def invoke(self, messages):
         return self._model.invoke(messages)
 
+    def bind_tools(self, tools):
+        """Bind tools so the model can emit function calls."""
+        return self._model.bind_tools(tools)
+
 
 def create_gemini_chat_model(
     model_name: str, temperature: float = 0.4

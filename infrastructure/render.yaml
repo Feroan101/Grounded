@@ -1,0 +1,32 @@
+# Render Web Service configuration for the Grounded backend.
+#
+# NOT used for deployment yet — it documents the intended production shape.
+# Reference: https://render.com/docs/blueprint-spec
+#
+# Secrets (Firestore credentials, Gemini API key, and the final Render
+# authentication mechanism) are provided via Render's env/docs, never in
+# this file.
+services:
+  - type: web
+    name: grounded-backend
+    runtime: docker
+    dockerfilePath: ../backend/Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: FIREBASE_PROJECT_ID
+        value: grounded-coffeeshop-ai
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:3000
+      # LLM provider + model
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_MODEL
+        value: gemini-2.0-flash
+      # Provided via Render secret env:
+      #   GOOGLE_API_KEY          (Gemini API key)
+      #   GOOGLE_APPLICATION_CREDENTIALS / FIREBASE_CREDENTIALS_PATH
+      #     (Firestore access — mechanism TBD, see backend/.env.example)
+      #   VECTOR_STORE_PROVIDER / VECTOR_STORE_HOST
+      #     (external vector DB — selected in a later phase)

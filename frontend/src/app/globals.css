@@ -165,13 +165,11 @@ button, [role="button"] {
   }
 }
 
-/* Dynamic viewport height utility */
-.h-dvh {
-  height: 100dvh;
-}
-
-@supports not (height: 100dvh) {
-  .h-dvh {
-    height: 100vh;
+/* Dynamic viewport height fallback for browsers without dvh support */
+@layer utilities {
+  @supports not (height: 100dvh) {
+    .h-dvh {
+      height: 100vh;
+    }
   }
 }

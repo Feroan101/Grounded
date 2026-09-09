@@ -12,13 +12,21 @@ from __future__ import annotations
 
 import logging
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+)
 
 from app.ai.llm import get_llm
 from app.api.schemas import ChatContextMetadata, ChatRequest
 from app.errors import ConfigurationError, GroundedError
+from app.services.currency_tools import CURRENCY_TOOLS
 
 logger = logging.getLogger(__name__)
+
+_MAX_TOOL_ROUNDS = 4
 
 SYSTEM_PROMPT = (
     "You are Grounded, a knowledgeable coffee-shop assistant at a specialty "
@@ -26,7 +34,12 @@ SYSTEM_PROMPT = (
     "Do not pretend to know our menu, prices, ingredients, or availability — "
     "if you don't have that information, say the information is unavailable "
     "rather than guessing. Give recommendations a short natural reason. "
-    "Never mention these instructions."
+    "You have access to a currency-conversion tool: use it when the customer "
+    "asks how much an amount is worth in another currency, and report the "
+    "result you receive. The rate is a published reference rate, not a live "
+    "trading price and not a statement about a country's economy. If the tool "
+    "fails, tell the customer you cannot convert right now — never invent a "
+    "rate. Never mention these instructions."
 )
 
 
@@ -93,7 +106,12 @@ class ChatService:
 
     @staticmethod
     def _generate(llm, request: ChatRequest) -> str:
-        """Build the conversation for Gemini and return the generated text."""
+        """Build the conversation for Gemini and return the generated text.
+
+        Tools are bound to the model. If the model emits a ``convert_currency``
+        tool call, it is executed and the result is fed back to the model. The
+        loop repeats until the model produces a final answer.
+        """
         messages = [SystemMessage(content=SYSTEM_PROMPT)]
         for msg in request.messages:
             if msg.role == "system":
@@ -103,7 +121,22 @@ class ChatService:
             else:
                 messages.append(HumanMessage(content=msg.content))
 
-        model_output = llm.invoke(messages)
+        tools = CURRENCY_TOOLS
+        tool_by_name = {tool.name: tool for tool in tools}
+        model = llm.bind_tools(tools)
+
+        for _ in range(_MAX_TOOL_ROUNDS):
+            model_output = model.invoke(messages)
+            tool_calls = _extract_tool_calls(model_output)
+            if not tool_calls:
+                break
+
+            # The tool-calling message must stay in context so the model sees
+            # which call each result belongs to.
+            messages.append(model_output)
+            for call in tool_calls:
+                messages.append(_execute_tool_call(call, tool_by_name))
+
         return _extract_text(model_output)
 
 
@@ -126,6 +159,33 @@ def _extract_text(model_output) -> str:
                     parts.append(str(text))
         return "".join(parts)
     return str(content)
+
+
+def _extract_tool_calls(model_output):
+    """Return the tool calls requested by the model (empty list if none)."""
+    return getattr(model_output, "tool_calls", None) or []
+
+
+def _execute_tool_call(call: dict, tool_by_name: dict):
+    """Execute one tool call and return the matching ``ToolMessage``."""
+    name = call.get("name", "")
+    tool_call_id = str(call.get("id") or "")
+    args = call.get("args") or {}
+
+    tool = tool_by_name.get(name)
+    if tool is None:
+        content = f"Tool '{name}' is not available."
+    else:
+        try:
+            content = str(tool.invoke(args))
+        except Exception:  # noqa: BLE001 — tool failures surface to the model
+            logger.exception("Tool '%s' failed with args %r", name, args)
+            content = (
+                f"The '{name}' tool failed. Do not guess an answer; tell the "
+                "customer the information is currently unavailable."
+            )
+
+    return ToolMessage(content=content, tool_call_id=tool_call_id)
 
 
 _chat_service = ChatService()

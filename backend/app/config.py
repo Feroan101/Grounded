@@ -40,9 +40,13 @@ FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "grounded-coffeeshop
 #   GOOGLE_APPLICATION_CREDENTIALS to the mounted credential file.
 FIREBASE_CREDENTIALS_PATH = os.environ.get("FIREBASE_CREDENTIALS_PATH", "")
 
+# Comma-separated list of browser origins allowed to call the backend.
+# Local dev is http://localhost:3000; production is the deployed frontend
+# (Firebase Hosting). The deployed service can override this via the
+# ALLOWED_ORIGINS environment variable.
 ALLOWED_ORIGINS = os.environ.get(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000",
+    "http://localhost:3000,https://grounded-coffeeshop-ai.web.app",
 ).split(",")
 
 API_HOST = os.environ.get("API_HOST", "0.0.0.0")
@@ -71,7 +75,7 @@ class LLMProvider(str, Enum):
 # Model provider + model selection. The provider must be one of the supported
 # enums so configuration errors are caught early.
 LLM_PROVIDER = LLMProvider(os.environ.get("LLM_PROVIDER", LLMProvider.GEMINI.value))
-LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-2.0-flash")
+LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-3.1-flash-lite")
 
 # Gemini API key — loaded through the configuration system. GEMINI_API_KEY is
 # the canonical variable; GOOGLE_API_KEY is accepted as a fallback (the Gemini

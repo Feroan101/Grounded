@@ -25,6 +25,13 @@ class ChatModel(Protocol):
     def invoke(self, messages):  # pragma: no cover - Protocol
         ...
 
+    def bind_tools(self, tools):  # pragma: no cover - Protocol
+        """Bind tools so the model can emit function calls.
+
+        Optional; models without tool support may raise NotImplementedError.
+        """
+        ...
+
 
 class LLMError(ProviderError):
     """Raised when the LLM provider cannot be reached or configured."""
