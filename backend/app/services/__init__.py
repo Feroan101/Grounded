@@ -1,0 +1,1 @@
+from app.services import chat_service  # noqa: F401

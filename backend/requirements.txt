@@ -42,3 +42,11 @@ typing-inspection==0.4.4
 typing_extensions==4.16.0
 urllib3==2.7.0
 uvicorn==0.52.4
+
+# -----------------------------------------------------------------------------
+# AI / agentic RAG stack
+# -----------------------------------------------------------------------------
+langchain==1.4.0
+langchain-core==1.6.2
+langchain-google-genai==4.4.0
+langgraph==1.2.11

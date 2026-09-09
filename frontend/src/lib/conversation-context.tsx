@@ -22,6 +22,7 @@ import {
 import { useAuth } from "./auth-context";
 import { useProfile } from "./profile-context";
 import { getFirebaseFirestore } from "./firebase";
+import { sendChatMessage } from "./api";
 
 export interface Message {
   role: "user" | "assistant";
@@ -43,7 +44,7 @@ interface ConversationContextValue {
   activeConversation: Conversation | undefined;
   startNewChat: () => void;
   setActiveConversation: (id: string | null) => void;
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string) => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
   renameConversation: (id: string, newTitle: string) => Promise<void>;
   clearError: () => void;
@@ -71,17 +72,6 @@ function deriveTitle(messages: Message[]): string {
   return "New conversation";
 }
 
-function fakeAssistantResponse(): string {
-  const responses = [
-    "I'd love to help you find the perfect coffee. What are you in the mood for today?",
-    "Great choice! Let me think about what would suit you best based on what you've told me.",
-    "Interesting! Based on your preferences, I have a few ideas. Let me walk you through them.",
-    "That's a popular request! Here's what I'd suggest for you right now.",
-    "I know just the thing. Let me pull up a couple of options that match your taste.",
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
-}
-
 function conversationsPath(uid: string) {
   return `users/${uid}/conversations`;
 }
@@ -96,6 +86,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const activeIdRef = useRef<string | null>(null);
   const historyEnabledRef = useRef(conversationHistoryEnabled);
+  const sendingRef = useRef(false);
 
   useEffect(() => {
     activeIdRef.current = activeConversationId;
@@ -193,8 +184,10 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
   );
 
   const sendMessage = useCallback(
-    (content: string) => {
-      if (!user) return;
+    async (content: string) => {
+      if (!user || sendingRef.current) return;
+      sendingRef.current = true;
+      setError(null);
 
       const userMsg: Message = { role: "user", content };
 
@@ -218,38 +211,66 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         prev.map((c) => {
           if (c.id !== convId) return c;
           const newMessages = [...c.messages, userMsg];
-          const updatedConv = {
+          return {
             ...c,
             title: deriveTitle(newMessages),
             messages: newMessages,
           };
-          return updatedConv;
         })
       );
 
-      setTimeout(() => {
-        const assistantMsg: Message = {
-          role: "assistant",
-          content: fakeAssistantResponse(),
-        };
+      let idToken: string;
+      try {
+        idToken = await user.getIdToken();
+      } catch {
+        setError("Couldn't reach your account. Please sign in again.");
+        sendingRef.current = false;
+        return;
+      }
 
-        setConversations((prev) =>
-          prev.map((c) => {
-            if (c.id !== convId) return c;
-            return { ...c, messages: [...c.messages, assistantMsg] };
-          })
-        );
+      const payloadMessages = [...(activeConversation?.messages ?? []), userMsg];
 
-        setConversations((prev) => {
-          const target = prev.find((c) => c.id === convId);
-          if (target) {
-            persistConversation(convId, target.title, target.messages);
-          }
-          return prev;
+      let assistantText: string;
+      try {
+        const result = await sendChatMessage({
+          messages: payloadMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          conversationId: convId,
+          idToken,
         });
-      }, 1500);
+        assistantText = result.answer;
+      } catch (err) {
+        const message =
+          err instanceof Error && err.message
+            ? err.message
+            : "Something went wrong while preparing the response.";
+        setError(message);
+        sendingRef.current = false;
+        return;
+      }
+
+      const assistantMsg: Message = { role: "assistant", content: assistantText };
+
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id !== convId) return c;
+          return { ...c, messages: [...c.messages, assistantMsg] };
+        })
+      );
+
+      setConversations((prev) => {
+        const target = prev.find((c) => c.id === convId);
+        if (target) {
+          persistConversation(convId, target.title, target.messages);
+        }
+        return prev;
+      });
+
+      sendingRef.current = false;
     },
-    [user, persistConversation]
+    [user, persistConversation, activeConversation]
   );
 
   const deleteConversation = useCallback(

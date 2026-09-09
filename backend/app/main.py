@@ -1,11 +1,27 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.chat import router as chat_router
+from app.api.errors import register_exception_handlers
 from app.auth import get_current_user
-from app.config import ALLOWED_ORIGINS, API_HOST, API_PORT
-from app.firebase import init_firebase
+from app.config import ALLOWED_ORIGINS, API_HOST, API_PORT, IS_PRODUCTION
 
-app = FastAPI(title="Grounded API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Firebase init is best-effort; the health endpoint must work without it.
+    from app.firebase import init_firebase
+
+    try:
+        init_firebase()
+    except Exception:
+        pass
+    yield
+
+
+app = FastAPI(title="Grounded API", version="0.2.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,15 +31,17 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+register_exception_handlers(app)
 
-@app.on_event("startup")
-def startup():
-    init_firebase()
+app.include_router(chat_router)
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "environment": "production" if IS_PRODUCTION else "development",
+    }
 
 
 @app.get("/api/me")
