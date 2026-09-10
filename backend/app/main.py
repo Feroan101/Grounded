@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
@@ -7,6 +8,8 @@ from app.api.chat import router as chat_router
 from app.api.errors import register_exception_handlers
 from app.auth import get_current_user
 from app.config import ALLOWED_ORIGINS, API_HOST, API_PORT, IS_PRODUCTION
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -30,6 +33,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+logger.info("CORS allowed origins: %s", ALLOWED_ORIGINS)
 
 register_exception_handlers(app)
 

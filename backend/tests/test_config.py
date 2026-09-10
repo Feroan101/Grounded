@@ -78,3 +78,77 @@ def test_gemini_api_key_may_be_empty_for_local_boot(monkeypatch):
     monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     importlib.reload(config)
     assert config.GEMINI_API_KEY == ""
+
+
+def test_allowed_origins_returns_list(monkeypatch):
+    import app.config as config
+
+    _no_dotenv(monkeypatch)
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
+    importlib.reload(config)
+
+    assert isinstance(config.ALLOWED_ORIGINS, list)
+
+
+def test_allowed_origins_unset_means_deny_all(monkeypatch):
+    import app.config as config
+
+    _no_dotenv(monkeypatch)
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
+    importlib.reload(config)
+
+    # No hardcoded origins: unset env defaults to deny-all.
+    assert config.ALLOWED_ORIGINS == []
+
+
+def test_allowed_origins_empty_env_means_deny_all(monkeypatch):
+    import app.config as config
+
+    _no_dotenv(monkeypatch)
+    monkeypatch.setenv("ALLOWED_ORIGINS", "")
+    importlib.reload(config)
+
+    assert config.ALLOWED_ORIGINS == []
+
+
+def test_allowed_origins_no_hardcoded_production_origin(monkeypatch):
+    import app.config as config
+
+    _no_dotenv(monkeypatch)
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
+    importlib.reload(config)
+
+    # The production frontend URL must NOT be baked into the code.
+    assert "https://grounded-coffeeshop-ai.web.app" not in config.ALLOWED_ORIGINS
+
+
+def test_allowed_origins_from_env(monkeypatch):
+    import app.config as config
+
+    _no_dotenv(monkeypatch)
+    monkeypatch.setenv(
+        "ALLOWED_ORIGINS",
+        "https://app.example.com, https://dev.example.com",
+    )
+    importlib.reload(config)
+
+    assert config.ALLOWED_ORIGINS == [
+        "https://app.example.com",
+        "https://dev.example.com",
+    ]
+
+
+def test_allowed_origins_whitespace_filtered(monkeypatch):
+    import app.config as config
+
+    _no_dotenv(monkeypatch)
+    monkeypatch.setenv(
+        "ALLOWED_ORIGINS",
+        "https://one.example.com, ,, https://two.example.com",
+    )
+    importlib.reload(config)
+
+    assert config.ALLOWED_ORIGINS == [
+        "https://one.example.com",
+        "https://two.example.com",
+    ]

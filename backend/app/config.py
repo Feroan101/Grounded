@@ -23,6 +23,11 @@ def _env_int(name: str, default: int) -> int:
 # Firebase project ID — used for token verification (public, no secrets)
 FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "grounded-coffeeshop-ai")
 
+# Firestore named database. The project uses a custom-named database ("grounded")
+# rather than the default Firestore database. Set FIRESTORE_DATABASE if your
+# project uses a different name.
+FIRESTORE_DATABASE = os.environ.get("FIRESTORE_DATABASE", "grounded")
+
 # Firebase Admin credentials — OPTIONAL for auth, REQUIRED for Firestore.
 #
 # Token verification uses Google's public JWKS keys and does NOT need credentials.
@@ -41,13 +46,15 @@ FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "grounded-coffeeshop
 FIREBASE_CREDENTIALS_PATH = os.environ.get("FIREBASE_CREDENTIALS_PATH", "")
 
 # Comma-separated list of browser origins allowed to call the backend.
-# Local dev is http://localhost:3000; production is the deployed frontend
-# (Firebase Hosting). The deployed service can override this via the
-# ALLOWED_ORIGINS environment variable.
-ALLOWED_ORIGINS = os.environ.get(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,https://grounded-coffeeshop-ai.web.app",
-).split(",")
+# ONLY read from the ecosystem. No hardcoded origins — if unset or empty,
+# cross-origin requests are denied (default-deny). Callers MUST configure
+# this per environment (local dev, production).
+_raw_origins = os.environ.get("ALLOWED_ORIGINS", "").strip()
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in _raw_origins.split(",")
+    if origin.strip()
+]
 
 API_HOST = os.environ.get("API_HOST", "0.0.0.0")
 API_PORT = _env_int("API_PORT", 8000)

@@ -2,7 +2,7 @@ import logging
 
 from google.cloud import firestore
 
-from app.config import FIREBASE_PROJECT_ID
+from app.config import FIREBASE_PROJECT_ID, FIRESTORE_DATABASE
 from app.credentials import get_credentials
 
 logger = logging.getLogger(__name__)
@@ -22,9 +22,14 @@ def get_firestore() -> firestore.Client:
     creds = get_credentials()
     _db = firestore.Client(
         project=FIREBASE_PROJECT_ID,
-        credential=creds,
+        credentials=creds,
+        database=FIRESTORE_DATABASE,
     )
-    logger.info("Firestore client initialized (project=%s)", FIREBASE_PROJECT_ID)
+    logger.info(
+        "Firestore client initialized (project=%s, database=%s)",
+        FIREBASE_PROJECT_ID,
+        FIRESTORE_DATABASE,
+    )
     return _db
 
 
