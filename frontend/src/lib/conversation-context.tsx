@@ -21,6 +21,7 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "./auth-context";
 import { useProfile } from "./profile-context";
+import { useBackendReadiness } from "./backend-readiness";
 import { getFirebaseFirestore } from "./firebase";
 import { sendChatMessage } from "./api";
 
@@ -42,6 +43,7 @@ interface ConversationContextValue {
   error: string | null;
   activeConversationId: string | null;
   activeConversation: Conversation | undefined;
+  isSending: boolean;
   startNewChat: () => void;
   setActiveConversation: (id: string | null) => void;
   sendMessage: (content: string) => Promise<void>;
@@ -79,14 +81,17 @@ function conversationsPath(uid: string) {
 export function ConversationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const { conversationHistoryEnabled } = useProfile();
+  const { setStatus: setBackendStatus } = useBackendReadiness();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const activeIdRef = useRef<string | null>(null);
   const historyEnabledRef = useRef(conversationHistoryEnabled);
   const sendingRef = useRef(false);
+  const hasConnectedRef = useRef(false);
 
   useEffect(() => {
     activeIdRef.current = activeConversationId;
@@ -187,7 +192,16 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
     async (content: string) => {
       if (!user || sendingRef.current) return;
       sendingRef.current = true;
+      setIsSending(true);
       setError(null);
+
+      // The first real POST /api/chat acts as the backend readiness check.
+      // Surface the wake-up status so the UI can tell the customer the
+      // backend may still be starting up.
+      if (!hasConnectedRef.current) {
+        hasConnectedRef.current = true;
+        setBackendStatus("waking");
+      }
 
       const userMsg: Message = { role: "user", content };
 
@@ -224,7 +238,9 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         idToken = await user.getIdToken();
       } catch {
         setError("Couldn't reach your account. Please sign in again.");
+        setBackendStatus((prev) => (prev === "waking" ? "failed" : prev));
         sendingRef.current = false;
+        setIsSending(false);
         return;
       }
 
@@ -247,7 +263,9 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
             ? err.message
             : "Something went wrong while preparing the response.";
         setError(message);
+        setBackendStatus((prev) => (prev === "waking" ? "failed" : prev));
         sendingRef.current = false;
+        setIsSending(false);
         return;
       }
 
@@ -268,9 +286,13 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         return prev;
       });
 
+      // First successful backend contact: the readiness check passed.
+      setBackendStatus((prev) => (prev === "waking" ? "ready" : prev));
+
       sendingRef.current = false;
+      setIsSending(false);
     },
-    [user, persistConversation, activeConversation]
+    [user, persistConversation, activeConversation, setBackendStatus]
   );
 
   const deleteConversation = useCallback(
@@ -332,6 +354,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         error,
         activeConversationId,
         activeConversation,
+        isSending,
         startNewChat,
         setActiveConversation: setActiveConversationId,
         sendMessage,

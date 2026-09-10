@@ -9,16 +9,18 @@ export function WakeUpToast() {
   const [readyGone, setReadyGone] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Reset dismissed state when status transitions away from a dismissable state
-  const prevStatusRef = useRef(status);
-  useEffect(() => {
-    const prev = prevStatusRef.current;
-    prevStatusRef.current = status;
-    if (prev !== status && (status === "checking" || status === "failed" || (prev !== "ready" && status === "waking"))) {
+  // Reset per-status state when the status transitions. This is adjusted
+  // during render (React's recommended pattern) rather than in an effect.
+  const [prevStatus, setPrevStatus] = useState(status);
+  if (prevStatus !== status) {
+    setPrevStatus(status);
+    if (status === "waking" || status === "failed") {
       setDismissed(false);
+    }
+    if (status === "ready") {
       setReadyGone(false);
     }
-  }, [status]);
+  }
 
   // Auto-dismiss the "ready" toast after a delay
   useEffect(() => {
@@ -38,7 +40,6 @@ export function WakeUpToast() {
   }, []);
 
   const visible = useMemo(() => {
-    if (status === "checking") return true;
     if (status === "waking" && !dismissed) return true;
     if (status === "ready" && !readyGone) return true;
     if (status === "failed" && !dismissed) return true;
@@ -79,8 +80,8 @@ export function WakeUpToast() {
             {isReady
               ? "The coffee machine is warmed up."
               : isFailed
-                ? "We\u2019re still trying. You can refresh the page or try again shortly."
-                : "Give us a moment while the coffee machine starts up."}
+                ? "We couldn\u2019t reach the backend. Check that it\u2019s running and try again."
+                : "This can take a moment."}
           </p>
         </div>
         {!isReady && (

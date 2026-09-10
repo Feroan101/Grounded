@@ -1,5 +1,7 @@
 "use client";
 
+import { CoffeeFactsCard } from "@/components/coffee-facts-card";
+
 interface EmptyStateProps {
   onSuggestionClick: (message: string) => void;
 }
@@ -61,6 +63,13 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="mt-10 w-full">
+        <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.2em] text-cafe/50">
+          While you&apos;re deciding
+        </p>
+        <CoffeeFactsCard />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { useAuth } from "@/lib/auth-context";
 import { ConversationProvider } from "@/lib/conversation-context";
 import { ProfileProvider } from "@/lib/profile-context";
+import { BackendReadinessProvider } from "@/lib/backend-readiness";
 import { LandingPage } from "@/components/landing-page";
 import { AuthenticatedApp } from "@/components/authenticated-app";
 import { CookieConsent } from "@/components/cookie-consent";
@@ -28,10 +29,12 @@ export default function Home() {
 
   return (
     <ProfileProvider>
-      <ConversationProvider>
-        <AuthenticatedApp />
-        <CookieConsent />
-      </ConversationProvider>
+      <BackendReadinessProvider>
+        <ConversationProvider>
+          <AuthenticatedApp />
+          <CookieConsent />
+        </ConversationProvider>
+      </BackendReadinessProvider>
     </ProfileProvider>
   );
 }
