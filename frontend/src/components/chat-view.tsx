@@ -3,9 +3,11 @@
 import { useRef, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useConversations } from "@/lib/conversation-context";
+import { useBackendReadiness } from "@/lib/backend-readiness";
 import { ChatInput } from "@/components/chat-input";
 import { MessageBubble } from "@/components/message-bubble";
 import { EmptyState } from "@/components/empty-state";
+import { CoffeeFactsCard } from "@/components/coffee-facts-card";
 import { ThinkingIndicator } from "@/components/thinking-indicator";
 
 function getGreeting(): string {
@@ -22,6 +24,7 @@ function hasActiveMessages(conv: { messages: { role: string }[] } | undefined): 
 export function ChatView() {
   const { user } = useAuth();
   const { activeConversation, sendMessage } = useConversations();
+  const { status: backendStatus } = useBackendReadiness();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isUserNearBottomRef = useRef(true);
@@ -33,6 +36,8 @@ export function ChatView() {
   }, [activeConversation]);
 
   const messageCount = activeConversation?.messages.length ?? 0;
+  const isBackendReady = backendStatus === "ready";
+  const isBackendUnavailable = backendStatus === "checking" || backendStatus === "waking" || backendStatus === "failed";
 
   const checkIfNearBottom = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -65,7 +70,20 @@ export function ChatView() {
   return (
     <div className="flex h-full flex-col">
       <main ref={scrollContainerRef} className="min-h-0 flex-1 overflow-y-auto">
-        {showEmpty ? (
+        {showEmpty && isBackendUnavailable ? (
+          <div className="flex h-full flex-col">
+            <div className="px-4 pt-8 pb-2 sm:px-6 md:pt-12">
+              <h2 className="text-2xl font-semibold text-espresso sm:text-3xl">
+                {getGreeting()}, {displayName}
+              </h2>
+              <p className="mt-1 text-sm text-latte">
+                Grounded is warming up...
+              </p>
+              <div className="mt-4 h-px bg-gradient-to-r from-cafe/20 via-cafe/10 to-transparent" />
+            </div>
+            <CoffeeFactsCard />
+          </div>
+        ) : showEmpty ? (
           <div className="flex h-full flex-col">
             <div className="px-4 pt-8 pb-2 sm:px-6 md:pt-12">
               <h2 className="text-2xl font-semibold text-espresso sm:text-3xl">
@@ -104,7 +122,12 @@ export function ChatView() {
         )}
       </main>
 
-      <ChatInput onSend={handleSend} disabled={isThinking} />
+      <ChatInput
+        onSend={handleSend}
+        disabled={isThinking}
+        backendReady={isBackendReady}
+        backendStatus={backendStatus}
+      />
     </div>
   );
 }

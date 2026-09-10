@@ -3,10 +3,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useConversations } from "@/lib/conversation-context";
+import { BackendReadinessProvider } from "@/lib/backend-readiness";
 import { ChatView } from "@/components/chat-view";
 import { HistoryView } from "@/components/history-view";
 import { ProfileView } from "@/components/profile-view";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { WakeUpToast } from "@/components/wake-up-toast";
 
 type Section = "chat" | "history" | "profile";
 
@@ -365,23 +367,26 @@ export function AuthenticatedApp() {
   }, []);
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden marble-bg marble-veins md:h-screen md:flex-row md:overflow-visible">
-      <SidebarNav
-        activeSection={activeSection}
-        onNavigate={handleNavigate}
-        onNewChat={handleNewChat}
-      />
-      <MobileHeader activeSection={activeSection} onNewChat={handleNewChat} />
+    <BackendReadinessProvider>
+      <div className="flex h-dvh flex-col overflow-hidden marble-bg marble-veins md:h-screen md:flex-row md:overflow-visible">
+        <SidebarNav
+          activeSection={activeSection}
+          onNavigate={handleNavigate}
+          onNewChat={handleNewChat}
+        />
+        <MobileHeader activeSection={activeSection} onNewChat={handleNewChat} />
 
-      <main className="min-h-0 flex-1 overflow-hidden">
-        {activeSection === "chat" && <ChatView />}
-        {activeSection === "history" && <HistoryView onSelect={handleHistorySelect} />}
-        {activeSection === "profile" && <ProfileView />}
-      </main>
+        <main className="min-h-0 flex-1 overflow-hidden">
+          {activeSection === "chat" && <ChatView />}
+          {activeSection === "history" && <HistoryView onSelect={handleHistorySelect} />}
+          {activeSection === "profile" && <ProfileView />}
+        </main>
 
-      <MobileBottomNav activeSection={activeSection} onNavigate={handleNavigate} />
+        <MobileBottomNav activeSection={activeSection} onNavigate={handleNavigate} />
 
-      {error && <ErrorToast message={error} onDismiss={clearError} />}
-    </div>
+        {error && <ErrorToast message={error} onDismiss={clearError} />}
+        <WakeUpToast />
+      </div>
+    </BackendReadinessProvider>
   );
 }

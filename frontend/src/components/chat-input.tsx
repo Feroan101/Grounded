@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import type { BackendStatus } from "@/lib/backend-readiness";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  backendReady?: boolean;
+  backendStatus?: BackendStatus;
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, backendReady = true, backendStatus }: ChatInputProps) {
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const isDisabled = disabled || isSending;
+  const isDisabled = disabled || isSending || !backendReady;
 
   useEffect(() => {
     if (!isDisabled && textareaRef.current) {
@@ -61,7 +64,15 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
                   handleSubmit(e);
                 }
               }}
-              placeholder={isSending ? "Sending..." : "Ask Grounded about coffee..."}
+              placeholder={
+                isSending
+                  ? "Sending..."
+                  : backendStatus === "checking" || backendStatus === "waking"
+                    ? "Grounded is warming up..."
+                    : backendStatus === "failed"
+                      ? "Grounded is unavailable right now"
+                      : "Ask Grounded about coffee..."
+              }
               disabled={isDisabled}
               rows={1}
               className="flex-1 resize-none bg-transparent px-3 py-2 text-sm text-bean placeholder:text-latte/50 focus:outline-none disabled:opacity-40"
