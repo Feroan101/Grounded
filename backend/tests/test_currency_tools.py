@@ -128,7 +128,10 @@ def test_gemini_calls_convert_currency_for_conversion_question(monkeypatch):
     assert result.ok
     assert result.answer == "100 USD is about 8350.00 INR."
     # The model was given the chance to use tools.
-    assert [t.name for t in llm.bound_tools] == ["convert_currency"]
+    assert sorted(t.name for t in llm.bound_tools) == [
+        "convert_currency",
+        "search_menu",
+    ]
     # The model chose to call the tool exactly once.
     assert len(service.calls) == 1
     # And the loop produced a final answer after the tool round.
