@@ -50,3 +50,8 @@ langchain==1.4.0
 langchain-core==1.6.2
 langchain-google-genai==4.4.0
 langgraph==1.2.11
+
+# Semantic menu retrieval — Qdrant Cloud vector store.
+# Embeddings use the Gemini API through langchain-google-genai (above); no
+# additional embedding packages are required.
+qdrant-client==1.19.0

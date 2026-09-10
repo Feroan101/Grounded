@@ -23,13 +23,25 @@ from app.rag.retriever import (
 from app.rag.vectorestore import get_vector_store
 
 
-def test_no_hardcoded_vector_store():
+def test_no_hardcoded_vector_store(monkeypatch):
     """No fake/in-memory vector store may be silently used as 'production'."""
+    from app.rag.vectorestore import reset_vector_store
+
+    reset_vector_store()
+    monkeypatch.setattr(
+        "app.rag.vectorestore.is_vector_store_configured", lambda: False
+    )
     with pytest.raises(ConfigurationError):
         get_vector_store()
 
 
-def test_embeddings_require_explicit_selection():
+def test_embeddings_require_explicit_selection(monkeypatch):
+    from app.rag.embeddings import reset_embedder
+
+    reset_embedder()
+    monkeypatch.setattr(
+        "app.rag.embeddings.is_embeddings_configured", lambda: False
+    )
     with pytest.raises(ConfigurationError):
         get_embedder()
 

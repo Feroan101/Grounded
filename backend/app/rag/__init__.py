@@ -1,1 +1,1 @@
-from app.rag import context, embeddings, ingestion, models, retriever, vectorestore  # noqa: F401
+from app.rag import context, embeddings, ingestion, menu, models, retriever, vectorestore  # noqa: F401

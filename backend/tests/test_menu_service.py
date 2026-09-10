@@ -136,6 +136,19 @@ def _search(**kwargs):
     return MenuService().search(**kwargs)
 
 
+@pytest.fixture(autouse=True)
+def _structured_only(monkeypatch):
+    """Unit tests exercise the deterministic structured path.
+
+    They patch ``list_menu_items`` with fixture data, so semantic retrieval
+    must be forced off regardless of whether real Qdrant/Gemini credentials
+    happen to be present in the developer's local ``backend/.env``.
+    """
+    monkeypatch.setattr(
+        menu_service_module, "is_semantic_menu_configured", lambda: False
+    )
+
+
 class TestMenuServiceSearch:
     def test_all_items_returned_without_filters(self, fake_repo):
         results = _search()

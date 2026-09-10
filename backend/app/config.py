@@ -92,6 +92,13 @@ GEMINI_API_KEY = (
     os.environ.get("GEMINI_API_KEY", "") or os.environ.get("GOOGLE_API_KEY", "")
 ).strip()
 
+# Gemini embedding model used for semantic menu retrieval. Shares the same
+# GEMINI_API_KEY credential as the chat model. gemini-embedding-001 is the
+# stable, generally-available text embedding model.
+GEMINI_EMBEDDING_MODEL = os.environ.get(
+    "GEMINI_EMBEDDING_MODEL", "gemini-embedding-001"
+).strip()
+
 # Token/usage limits
 LLM_MAX_TOKENS = _env_int("LLM_MAX_TOKENS", 1024)
 LLM_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "0.4"))
@@ -118,6 +125,27 @@ VECTOR_STORE_PROVIDER = os.environ.get(
 # deploy time). These are optional until a provider is selected.
 VECTOR_STORE_HOST = os.environ.get("VECTOR_STORE_HOST", "")
 VECTOR_STORE_COLLECTION = os.environ.get("VECTOR_STORE_COLLECTION", "grounded_menu")
+
+# Qdrant Cloud connection for semantic menu retrieval. Never store real
+# credentials in source or tests; supply them per-environment.
+QDRANT_URL = os.environ.get("QDRANT_URL", "").strip()
+QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "").strip()
+QDRANT_COLLECTION = os.environ.get("QDRANT_COLLECTION", "grounded-menu").strip()
+
+# Number of semantic candidates to fetch from the vector store before applying
+# hard structured filters. Larger than the 8-item display cap so hard
+# constraints can narrow results without starving the final list.
+MENU_SEMANTIC_TOP_K = _env_int("MENU_SEMANTIC_TOP_K", 20)
+
+
+def is_semantic_menu_configured() -> bool:
+    """Whether hybrid semantic menu retrieval is fully configured.
+
+    Requires the Qdrant provider, Qdrant connection credentials, and the shared
+    Gemini API key. Semantic retrieval silently stays off until all are set.
+    """
+    qdrant_provider = VECTOR_STORE_PROVIDER in {"qdrant", "qdrant_cloud"}
+    return bool(qdrant_provider and QDRANT_URL and QDRANT_API_KEY and GEMINI_API_KEY)
 
 # Chunking tuning (start ranges — tunable without code changes).
 PARENT_CHUNK_TOKENS_MIN = _env_int("PARENT_CHUNK_TOKENS_MIN", 600)
