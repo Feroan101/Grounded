@@ -37,6 +37,19 @@ _SUPPORTED_CURRENCIES: frozenset[str] = frozenset({
     "THB", "TRY", "USD", "ZAR",
 })
 
+# Common currency symbols and English names → ISO-4217 codes. The tool schema
+# asks for ISO codes, but customers (and the model) speak in symbols/names.
+# This mapping is language, not exchange-rate data.
+_CURRENCY_ALIASES: dict[str, str] = {
+    "₹": "INR", "inr": "INR", "rupee": "INR", "rupees": "INR",
+    "indian rupee": "INR", "indian rupees": "INR",
+    "$": "USD", "usd": "USD", "dollar": "USD", "dollars": "USD",
+    "us dollar": "USD", "us dollars": "USD",
+    "€": "EUR", "eur": "EUR", "euro": "EUR", "euros": "EUR",
+    "£": "GBP", "gbp": "GBP", "pound": "GBP", "pounds": "GBP",
+    "¥": "JPY", "jpy": "JPY", "yen": "JPY",
+}
+
 
 # ── Result model ───────────────────────────────────────────────────
 
@@ -124,10 +137,18 @@ class CurrencyService:
             raise ValidationError(
                 f"{field_name} must be a non-empty ISO-4217 currency code."
             )
-        code = value.strip().upper()
+        raw = value.strip()
+        if not raw:
+            raise ValidationError(
+                f"{field_name} must be a non-empty ISO-4217 currency code."
+            )
+        # Symbols (₹, $, €, £, ¥) and English names (rupees, dollars, euros)
+        # resolve to their ISO-4217 code; otherwise the 3-letter code is used.
+        code = _CURRENCY_ALIASES.get(raw.lower(), raw).strip().upper()
         if len(code) != 3 or not code.isalpha():
             raise ValidationError(
-                f"{field_name} must be a 3-letter ISO-4217 code, got '{value}'."
+                f"{field_name} must be a 3-letter ISO-4217 code or a supported "
+                f"symbol/name, got '{raw}'."
             )
         if code not in _SUPPORTED_CURRENCIES:
             raise ValidationError(
@@ -183,9 +204,21 @@ class CurrencyService:
                 "The exchange-rate service returned invalid data."
             ) from exc
 
-        # Frankfurter v2 response: {"amount":1,"base":"USD","date":"…","rates":{"INR":…}}
-        rates = data.get("rates")
-        if not isinstance(rates, dict) or quote not in rates:
+        # Frankfurter v2 /rate/{base}/{quote} response shape:
+        #   {"base":"USD","quote":"INR","date":"…","rate":83.5}
+        if data.get("quote", quote).upper() != quote:
+            logger.warning(
+                "Frankfurter response quote mismatch — expected %s: %s",
+                quote, data,
+            )
+            raise ProviderError(
+                "The exchange-rate service did not return the expected rate."
+            )
+        rate = data.get("rate")
+        if rate is None and isinstance(data.get("rates"), dict):
+            # Tolerate a /latest-style payload if one is ever returned.
+            rate = data["rates"].get(quote)
+        if rate is None:
             logger.warning(
                 "Frankfurter response missing rate for %s: %s", quote, data
             )
@@ -194,9 +227,9 @@ class CurrencyService:
             )
 
         try:
-            rate = Decimal(str(rates[quote]))
+            rate = Decimal(str(rate))
         except (InvalidOperation, ValueError) as exc:
-            logger.warning("Cannot parse rate value: %s", rates[quote])
+            logger.warning("Cannot parse rate value: %s", rate)
             raise ProviderError(
                 "The exchange-rate service returned an unparseable rate."
             ) from exc

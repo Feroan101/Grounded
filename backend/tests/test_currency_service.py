@@ -43,10 +43,10 @@ def _fake_response(
 
 def _usd_to_inr_response(rate: float = 83.50, date: str = "2025-04-09"):
     return _fake_response({
-        "amount": 1,
         "base": "USD",
+        "quote": "INR",
+        "rate": rate,
         "date": date,
-        "rates": {"INR": rate},
     })
 
 
@@ -234,8 +234,7 @@ def test_api_missing_rate_in_response(monkeypatch):
     monkeypatch.setattr(
         mod.httpx, "get",
         lambda *a, **kw: _fake_response({
-            "amount": 1, "base": "USD", "date": "2025-04-09",
-            "rates": {"EUR": 0.92},
+            "base": "USD", "quote": "EUR", "date": "2025-04-09", "rate": 0.92,
         }),
     )
 
@@ -250,13 +249,104 @@ def test_api_malformed_rate_value(monkeypatch):
     monkeypatch.setattr(
         mod.httpx, "get",
         lambda *a, **kw: _fake_response({
-            "amount": 1, "base": "USD", "date": "2025-04-09",
-            "rates": {"INR": "not-a-number"},
+            "base": "USD", "quote": "INR", "date": "2025-04-09", "rate": "not-a-number",
         }),
     )
 
     with pytest.raises(ProviderError, match="unparseable rate"):
         CurrencyService().convert(100, "USD", "INR")
+
+
+# ── Tests: INR ↔ USD conversion ─────────────────────────────────
+
+def _inr_to_usd_response(rate: float = 0.01048, date: str = "2026-09-11"):
+    return _fake_response({
+        "base": "INR",
+        "quote": "USD",
+        "rate": rate,
+        "date": date,
+    })
+
+
+def test_inr_to_usd_conversion(monkeypatch):
+    """₹190 → USD at the Frankfurter v2 /rate endpoint shape."""
+    import app.services.currency_service as mod
+
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **kw: _inr_to_usd_response())
+
+    svc = CurrencyService()
+    result = svc.convert(190, "INR", "USD")
+
+    assert result.source_currency == "INR"
+    assert result.target_currency == "USD"
+    assert result.rate == Decimal("0.01048")
+    assert result.converted_amount == Decimal("1.99")
+    assert result.rate_date == "2026-09-11"
+
+
+def test_usd_to_inr_reversed_direction(monkeypatch):
+    """USD → INR should use the matching /rate endpoint payload."""
+    import app.services.currency_service as mod
+
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **kw: _usd_to_inr_response(rate=85.25, date="2026-09-10"))
+
+    result = CurrencyService().convert(25, "USD", "INR")
+    assert result.converted_amount == Decimal("2131.25")
+    assert result.rate == Decimal("85.25")
+    assert result.rate_date == "2026-09-10"
+
+
+# ── Tests: currency aliases (symbols / names → ISO) ─────────────
+
+def test_inr_symbol_resolves_to_inr(monkeypatch):
+    import app.services.currency_service as mod
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **kw: _inr_to_usd_response())
+
+    result = CurrencyService().convert(190, "₹", "USD")
+    assert result.source_currency == "INR"
+    assert result.target_currency == "USD"
+
+
+def test_currency_name_resolves(monkeypatch):
+    import app.services.currency_service as mod
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **kw: _inr_to_usd_response())
+
+    result = CurrencyService().convert(190, "Indian rupees", "US dollars")
+    assert result.source_currency == "INR"
+    assert result.target_currency == "USD"
+    assert result.converted_amount == Decimal("1.99")
+
+
+def test_dollar_symbol_resolves_to_usd(monkeypatch):
+    import app.services.currency_service as mod
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **kw: _inr_to_usd_response(rate=0.01048))
+
+    result = CurrencyService().convert(190, "₹", "$")
+    assert result.source_currency == "INR"
+    assert result.target_currency == "USD"
+
+
+def test_unrecognised_name_rejected():
+    with pytest.raises(ValidationError, match="symbol/name"):
+        CurrencyService().convert(100, "USD", "monopoly money")
+
+
+# ── Tests: response shape tolerance ─────────────────────────────
+
+def test_tolerates_rates_dict_shape(monkeypatch):
+    """If a /latest-style payload is returned, the parser falls back gracefully."""
+    import app.services.currency_service as mod
+
+    monkeypatch.setattr(
+        mod.httpx, "get",
+        lambda *a, **kw: _fake_response({
+            "amount": 1, "base": "USD", "date": "2025-04-09",
+            "rates": {"INR": 83.50},
+        }),
+    )
+
+    result = CurrencyService().convert(100, "USD", "INR")
+    assert result.converted_amount == Decimal("8350.00")
 
 
 # ── Tests: decimal precision ──────────────────────────────────────

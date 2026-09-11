@@ -301,3 +301,214 @@ def test_currency_tool_uses_existing_service_through_wrapper(monkeypatch):
     assert "8350.00 INR" in output
     assert "83.50" in output
     assert "Frankfurter" in output
+
+
+# ── Real-service helpers (mock httpx, keep real CurrencyService) ──
+
+_RATES = {
+    ("INR", "USD"): ("0.01048", "2026-09-11"),
+    ("USD", "INR"): ("85.25", "2026-09-10"),
+}
+
+
+def _mock_rate_get(*args, **kwargs):
+    """Return the correct Frankfurter v2 /rate payload for the requested pair."""
+    import json, re
+    url = args[0] if args else kwargs.get("url", "")
+    m = re.search(r"/rate/(\w+)/(\w+)$", str(url))
+    base, quote = (m.group(1), m.group(2)) if m else ("USD", "INR")
+    rate_str, date = _RATES.get((base, quote), ("1.0", "2026-01-01"))
+
+    class _Resp:
+        status_code = 200
+        def json(self):
+            return {"base": base, "quote": quote, "rate": rate_str, "date": date}
+        @property
+        def text(self):
+            return json.dumps(self.json())
+
+    return _Resp()
+
+
+def _run_chat_with_real_service(monkeypatch, script, user_message="How much is ₹190 in USD?"):
+    import app.services.currency_service as cs_mod
+
+    bound = _BoundModel(script)
+    llm = _FakeLLM(bound)
+    monkeypatch.setattr(chat_service, "get_llm", lambda: llm)
+    monkeypatch.setattr(cs_mod.httpx, "get", _mock_rate_get)
+    result = chat_service.ChatService().process(_request(user_message))
+    return bound, result
+
+
+class _FakeMenuService:
+    """Menu stub for the menu→currency ordering tests."""
+    def __init__(self):
+        self.calls: list[dict] = []
+    def search(self, **kwargs):
+        self.calls.append(kwargs)
+        return [{
+            "id": "m1",
+            "name": "Chilled House Nut Milk",
+            "category": "Non-Coffee Beverages",
+            "price": 190.0,
+            "size": "300 ml",
+            "caffeine": "none",
+            "temperature": "cold",
+            "sweetness": "low",
+            "dietary": ["vegan", "dairy-free"],
+            "available": True,
+            "description": "House-made nut milk, chilled.",
+        }]
+
+
+# ── 1. ₹190 → USD ─────────────────────────────────────────────
+
+def test_inr190_to_usd_via_tool(monkeypatch):
+    tool_call = AIMessage(
+        content="",
+        tool_calls=[{
+            "name": "convert_currency",
+            "args": {"amount": 190, "from_currency": "₹", "to_currency": "USD"},
+            "id": "c1",
+            "type": "tool_call",
+        }],
+    )
+    bound, result = _run_chat_with_real_service(
+        monkeypatch,
+        [tool_call, AIMessage(content="₹190 is about $1.99.")],
+    )
+    assert result.ok
+    tool_msgs = [m for m in bound.supplied_messages[1] if isinstance(m, ToolMessage)]
+    assert len(tool_msgs) == 1
+    assert "190.0 INR" in tool_msgs[0].content
+    assert "1.99 USD" in tool_msgs[0].content
+    assert "0.01048" in tool_msgs[0].content
+    assert result.answer == "₹190 is about $1.99."
+
+
+# ── 2. INR → USD using currency names ──────────────────────────
+
+def test_currency_names_inr_to_usd(monkeypatch):
+    tool_call = AIMessage(
+        content="",
+        tool_calls=[{
+            "name": "convert_currency",
+            "args": {
+                "amount": 190,
+                "from_currency": "Indian rupees",
+                "to_currency": "US dollars",
+            },
+            "id": "c1",
+            "type": "tool_call",
+        }],
+    )
+    bound, result = _run_chat_with_real_service(
+        monkeypatch,
+        [tool_call, AIMessage(content="190 INR ≈ $1.99.")],
+    )
+    assert result.ok
+    tool_msgs = [m for m in bound.supplied_messages[1] if isinstance(m, ToolMessage)]
+    assert "190.0 INR" in tool_msgs[0].content
+    assert "1.99 USD" in tool_msgs[0].content
+
+
+# ── 3. USD → INR ───────────────────────────────────────────────
+
+def test_usd_to_inr_reversed_via_tool(monkeypatch):
+    tool_call = AIMessage(
+        content="",
+        tool_calls=[{
+            "name": "convert_currency",
+            "args": {"amount": 25, "from_currency": "USD", "to_currency": "INR"},
+            "id": "c1",
+            "type": "tool_call",
+        }],
+    )
+    bound, result = _run_chat_with_real_service(
+        monkeypatch,
+        [tool_call, AIMessage(content="25 USD ≈ ₹2131.25.")],
+    )
+    assert result.ok
+    tool_msgs = [m for m in bound.supplied_messages[1] if isinstance(m, ToolMessage)]
+    assert "25.0 USD" in tool_msgs[0].content
+    assert "2131.25 INR" in tool_msgs[0].content
+
+
+# ── 4. Menu price → currency conversion (ordering) ─────────────
+
+def test_menu_price_then_currency_conversion(monkeypatch):
+    import app.services.menu_tools as menu_tools_mod
+
+    menu_svc = _FakeMenuService()
+    bound = _BoundModel([
+        AIMessage(
+            content="",
+            tool_calls=[{
+                "name": "search_menu",
+                "args": {"dietary": "dairy-free", "max_price": 200},
+                "id": "c1",
+                "type": "tool_call",
+            }],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{
+                "name": "convert_currency",
+                "args": {"amount": 190, "from_currency": "INR", "to_currency": "USD"},
+                "id": "c2",
+                "type": "tool_call",
+            }],
+        ),
+        AIMessage(content="Chilled House Nut Milk is ₹190, about $1.99."),
+    ])
+    llm = _FakeLLM(bound)
+    import app.services.currency_service as cs_mod
+    monkeypatch.setattr(chat_service, "get_llm", lambda: llm)
+    monkeypatch.setattr(menu_tools_mod, "get_menu_service", lambda: menu_svc)
+    monkeypatch.setattr(cs_mod.httpx, "get", _mock_rate_get)
+    result = chat_service.ChatService().process(
+        _request("I want something dairy-free under ₹200. What is that in USD?")
+    )
+
+    assert result.ok
+    assert menu_svc.calls[0]["dietary"] == "dairy-free"
+    assert menu_svc.calls[0]["max_price"] == 200
+    # Round 1: search_menu result
+    round1_tools = [m for m in bound.supplied_messages[1] if isinstance(m, ToolMessage)]
+    assert any("Chilled House Nut Milk" in m.content for m in round1_tools)
+    # Round 2: convert_currency result — amount matches the menu price
+    round2_tools = [m for m in bound.supplied_messages[2] if isinstance(m, ToolMessage)]
+    assert any("190.0 INR" in m.content for m in round2_tools)
+    assert any("1.99 USD" in m.content for m in round2_tools)
+    assert result.answer == "Chilled House Nut Milk is ₹190, about $1.99."
+
+
+# ── 5. Normal menu question — currency tool must NOT be invoked ─
+
+def test_menu_question_does_not_invoke_currency(monkeypatch):
+    import app.services.menu_tools as menu_tools_mod
+
+    fake_currency = _FakeCurrencyService(_conversion_result())
+    menu_svc = _FakeMenuService()
+    bound = _BoundModel([
+        AIMessage(
+            content="",
+            tool_calls=[{
+                "name": "search_menu",
+                "args": {"temperature": "cold"},
+                "id": "c1",
+                "type": "tool_call",
+            }],
+        ),
+        AIMessage(content="Chilled House Nut Milk is a cold option."),
+    ])
+    llm = _FakeLLM(bound)
+    monkeypatch.setattr(chat_service, "get_llm", lambda: llm)
+    monkeypatch.setattr(menu_tools_mod, "get_menu_service", lambda: menu_svc)
+    monkeypatch.setattr(currency_tools, "get_currency_service", lambda: fake_currency)
+    result = chat_service.ChatService().process(_request("What cold drinks do you have?"))
+
+    assert result.ok
+    assert fake_currency.calls == []
+    assert len(menu_svc.calls) == 1
