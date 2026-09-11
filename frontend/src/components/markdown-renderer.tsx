@@ -37,7 +37,7 @@ function renderInlineMarkdown(text: string): React.ReactNode[] {
           href={match[6]}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-2 decoration-cafe/40 hover:decoration-espresso transition-colors"
+          className="text-espresso underline underline-offset-2 decoration-cafe/40 transition-colors hover:decoration-espresso"
         >
           {match[5]}
         </a>
@@ -78,7 +78,7 @@ function parseBlocks(content: string): React.ReactNode[] {
       }
       i++; // skip closing ```
       blocks.push(
-        <div key={key++} className="my-3 overflow-x-auto rounded-lg border border-cafe/15 bg-bean/5">
+        <div key={key++} className="overflow-x-auto rounded-lg border border-cafe/15 bg-bean/5">
           {lang && (
             <div className="border-b border-cafe/10 px-3 py-1">
               <span className="text-[10px] font-medium uppercase tracking-wider text-latte/50">
@@ -94,6 +94,47 @@ function parseBlocks(content: string): React.ReactNode[] {
       continue;
     }
 
+    // Headings
+    const heading = line.match(/^(#{1,4})\s+(.*)$/);
+    if (heading) {
+      const level = heading[1].length;
+      const text = heading[2];
+      const contentNode = renderInlineMarkdown(text);
+      if (level <= 2) {
+        blocks.push(
+          <h3 key={key++} className="text-[17px] font-semibold tracking-tight text-espresso">
+            {contentNode}
+          </h3>
+        );
+      } else {
+        blocks.push(
+          <h4 key={key++} className="text-[15px] font-semibold text-espresso">
+            {contentNode}
+          </h4>
+        );
+      }
+      i++;
+      continue;
+    }
+
+    // Blockquote
+    if (/^>\s?/.test(line)) {
+      const quoteLines: string[] = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) {
+        quoteLines.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+      blocks.push(
+        <blockquote
+          key={key++}
+          className="border-l-2 border-latte/40 pl-3 text-[15px] leading-relaxed text-latte italic"
+        >
+          {renderInlineMarkdown(quoteLines.join("\n"))}
+        </blockquote>
+      );
+      continue;
+    }
+
     // Unordered list
     if (/^[\s]*[-*+]\s/.test(line)) {
       const listItems: string[] = [];
@@ -102,7 +143,7 @@ function parseBlocks(content: string): React.ReactNode[] {
         i++;
       }
       blocks.push(
-        <ul key={key++} className="my-2 ml-4 list-disc space-y-1 text-sm leading-relaxed">
+        <ul key={key++} className="ml-5 list-disc space-y-1.5 text-[15px] leading-relaxed marker:text-latte/60">
           {listItems.map((item, li) => (
             <li key={li}>{renderInlineMarkdown(item)}</li>
           ))}
@@ -119,7 +160,7 @@ function parseBlocks(content: string): React.ReactNode[] {
         i++;
       }
       blocks.push(
-        <ol key={key++} className="my-2 ml-4 list-decimal space-y-1 text-sm leading-relaxed">
+        <ol key={key++} className="ml-5 list-decimal space-y-1.5 text-[15px] leading-relaxed marker:text-latte/60">
           {listItems.map((item, li) => (
             <li key={li}>{renderInlineMarkdown(item)}</li>
           ))}
@@ -140,6 +181,8 @@ function parseBlocks(content: string): React.ReactNode[] {
       i < lines.length &&
       lines[i].trim() !== "" &&
       !lines[i].trimStart().startsWith("```") &&
+      !/^#{1,4}\s/.test(lines[i]) &&
+      !/^>\s?/.test(lines[i]) &&
       !/^[\s]*[-*+]\s/.test(lines[i]) &&
       !/^[\s]*\d+\.\s/.test(lines[i])
     ) {
@@ -148,7 +191,7 @@ function parseBlocks(content: string): React.ReactNode[] {
     }
     if (paraLines.length > 0) {
       blocks.push(
-        <p key={key++} className="text-sm leading-relaxed">
+        <p key={key++} className="text-[15px] leading-relaxed">
           {renderInlineMarkdown(paraLines.join("\n"))}
         </p>
       );
@@ -159,5 +202,5 @@ function parseBlocks(content: string): React.ReactNode[] {
 }
 
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
-  return <div className="space-y-2">{parseBlocks(content)}</div>;
+  return <div className="space-y-3">{parseBlocks(content)}</div>;
 }

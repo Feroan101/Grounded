@@ -2,7 +2,7 @@
 
 export function ActivityIndicator({ activity }: { activity: string }) {
   return (
-    <div className="flex justify-start gap-2.5" aria-live="polite" aria-busy="true">
+    <div className="mt-6 flex justify-start gap-2.5" role="status" aria-live="polite" aria-busy="true">
       <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-latte/15 ring-1 ring-latte/10">
         <svg
           className="h-3.5 w-3.5 text-latte/80"
@@ -20,7 +20,7 @@ export function ActivityIndicator({ activity }: { activity: string }) {
           <line x1="14" y1="2" x2="14" y2="4" />
         </svg>
       </div>
-      <div className="flex max-w-[85%] items-center gap-2 rounded-2xl rounded-tl-md border border-latte/10 bg-bubble-tint px-4 py-3 shadow-bubble sm:max-w-[75%]">
+      <div className="flex min-w-0 items-center gap-2 pt-1.5">
         <span className="text-xs font-medium text-latte">{activity}</span>
         <span className="flex items-center gap-1">
           <span className="h-1 w-1 rounded-full bg-latte/60 animate-pulse-dot" />

@@ -51,6 +51,7 @@ interface ConversationContextValue {
   startNewChat: () => void;
   setActiveConversation: (id: string | null) => void;
   sendMessage: (content: string) => Promise<void>;
+  regenerate: () => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
   renameConversation: (id: string, newTitle: string) => Promise<void>;
   clearError: () => void;
@@ -215,58 +216,11 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
     [user]
   );
 
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!user || sendingRef.current) return;
-      sendingRef.current = true;
-      setIsSending(true);
-      setError(null);
-      applyActivity(ACTIVITY_STARTING);
-
-      // The first real POST /api/chat acts as the backend readiness check.
-      // Surface the wake-up status so the UI can tell the customer the
-      // backend may still be starting up. A retry after a connection failure
-      // re-enters the waking state so a later success can move to "ready".
-      if (!hasConnectedRef.current) {
-        hasConnectedRef.current = true;
-        setBackendStatus("waking");
-      } else if (backendStatus === "failed") {
-        setBackendStatus("waking");
-      }
-
-      const userMsg: Message = { role: "user", content };
-
-      let convId = activeIdRef.current;
-
-      if (!convId) {
-        convId = genId();
-        const conv: Conversation = {
-          id: convId,
-          title: "New conversation",
-          messages: [],
-          createdAt: Date.now(),
-        };
-        setConversations((prev) => [conv, ...prev]);
-        setActiveConversationId(convId);
-        activeIdRef.current = convId;
-        persistConversation(convId, deriveTitle([userMsg]), [userMsg]);
-      }
-
-      setConversations((prev) =>
-        prev.map((c) => {
-          if (c.id !== convId) return c;
-          const newMessages = [...c.messages, userMsg];
-          return {
-            ...c,
-            title: deriveTitle(newMessages),
-            messages: newMessages,
-          };
-        })
-      );
-
+  const sendToAgent = useCallback(
+    async (convId: string, payloadMessages: Message[]) => {
       let idToken: string;
       try {
-        idToken = await user.getIdToken();
+        idToken = await user!.getIdToken();
       } catch {
         setError("Couldn't reach your account. Please sign in again.");
         setBackendStatus((prev) => (prev === "waking" ? "failed" : prev));
@@ -275,8 +229,6 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         applyActivity(null);
         return;
       }
-
-      const payloadMessages = [...(activeConversation?.messages ?? []), userMsg];
 
       let assistantText: string;
       try {
@@ -327,8 +279,124 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       sendingRef.current = false;
       setIsSending(false);
     },
-    [user, persistConversation, activeConversation, backendStatus, setBackendStatus, applyActivity]
+    [user, persistConversation, setBackendStatus, applyActivity]
   );
+
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!user || sendingRef.current) return;
+      sendingRef.current = true;
+      setIsSending(true);
+      setError(null);
+      applyActivity(ACTIVITY_STARTING);
+
+      // The first real POST /api/chat acts as the backend readiness check.
+      // Surface the wake-up status so the UI can tell the customer the
+      // backend may still be starting up. A retry after a connection failure
+      // re-enters the waking state so a later success can move to "ready".
+      if (!hasConnectedRef.current) {
+        hasConnectedRef.current = true;
+        setBackendStatus("waking");
+      } else if (backendStatus === "failed") {
+        setBackendStatus("waking");
+      }
+
+      const userMsg: Message = { role: "user", content };
+
+      let convId = activeIdRef.current;
+
+      if (!convId) {
+        convId = genId();
+        const conv: Conversation = {
+          id: convId,
+          title: "New conversation",
+          messages: [],
+          createdAt: Date.now(),
+        };
+        setConversations((prev) => [conv, ...prev]);
+        setActiveConversationId(convId);
+        activeIdRef.current = convId;
+        persistConversation(convId, deriveTitle([userMsg]), [userMsg]);
+      }
+
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id !== convId) return c;
+          const newMessages = [...c.messages, userMsg];
+          return {
+            ...c,
+            title: deriveTitle(newMessages),
+            messages: newMessages,
+          };
+        })
+      );
+
+      const payloadMessages = [...(activeConversation?.messages ?? []), userMsg];
+
+      await sendToAgent(convId, payloadMessages);
+    },
+    [
+      user,
+      activeConversation,
+      backendStatus,
+      setBackendStatus,
+      applyActivity,
+      persistConversation,
+      sendToAgent,
+    ]
+  );
+
+  const regenerate = useCallback(async () => {
+    if (!user || sendingRef.current || !activeConversation) return;
+
+    // Re-run the last exchange: drop the trailing assistant replies and send
+    // the conversation up to and including the latest customer message again.
+    const convId = activeConversation.id;
+    let lastUserIndex = -1;
+    for (let idx = activeConversation.messages.length - 1; idx >= 0; idx--) {
+      if (activeConversation.messages[idx].role === "user") {
+        lastUserIndex = idx;
+        break;
+      }
+    }
+    if (lastUserIndex < 0) return;
+
+    sendingRef.current = true;
+    setIsSending(true);
+    setError(null);
+    applyActivity(ACTIVITY_STARTING);
+
+    if (!hasConnectedRef.current) {
+      hasConnectedRef.current = true;
+      setBackendStatus("waking");
+    } else if (backendStatus === "failed") {
+      setBackendStatus("waking");
+    }
+
+    const truncated = activeConversation.messages.slice(0, lastUserIndex + 1);
+
+    setConversations((prev) =>
+      prev.map((c) => (c.id === convId ? { ...c, messages: truncated } : c))
+    );
+
+    setConversations((prev) => {
+      const target = prev.find((c) => c.id === convId);
+      if (target) {
+        persistConversation(convId, target.title, target.messages);
+      }
+      return prev;
+    });
+
+    await sendToAgent(convId, truncated);
+  }, [
+    user,
+    activeConversation,
+    backendStatus,
+    setBackendStatus,
+    applyActivity,
+    persistConversation,
+    sendToAgent,
+  ]);
 
   const deleteConversation = useCallback(
     async (id: string) => {
@@ -394,6 +462,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         startNewChat,
         setActiveConversation: setActiveConversationId,
         sendMessage,
+        regenerate,
         deleteConversation,
         renameConversation,
         clearError,

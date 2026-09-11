@@ -44,10 +44,10 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="flex flex-shrink-0 border-t border-cafe/15 bg-marble/80 backdrop-blur-md">
-      <div className="w-full px-4 py-3 sm:px-6 sm:py-4">
+    <div className="flex flex-shrink-0 border-t border-cafe/15 bg-marble/85 backdrop-blur-md">
+      <div className="mx-auto w-full max-w-3xl px-4 py-3 sm:px-6 sm:py-4">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex items-end gap-2 rounded-2xl border border-cafe/20 bg-ivory p-2 shadow-sm transition-all focus-within:border-cafe/40 focus-within:shadow-md focus-within:ring-1 focus-within:ring-cafe/10">
+          <div className="flex items-end gap-2 rounded-2xl border border-cafe/20 bg-ivory p-2 shadow-sm transition-all focus-within:border-cafe/40 focus-within:ring-[3px] focus-within:ring-cafe/10">
             <textarea
               ref={textareaRef}
               value={input}
@@ -68,9 +68,10 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
               }
               disabled={isDisabled}
               rows={1}
-              className="flex-1 resize-none bg-transparent px-3 py-2 text-sm text-bean placeholder:text-latte/50 focus:outline-none disabled:opacity-40"
+              className="min-w-0 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-relaxed text-bean placeholder:text-latte/50 focus:outline-none disabled:opacity-40"
               style={{ minHeight: "40px", maxHeight: "120px" }}
               aria-label="Message input"
+              aria-describedby={isDisabled ? undefined : "chat-input-hint"}
             />
             <button
               type="submit"
@@ -108,6 +109,12 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
               )}
             </button>
           </div>
+          <p
+            id="chat-input-hint"
+            className="mt-1.5 hidden text-center text-[10px] tracking-wide text-latte/40 sm:block"
+          >
+            Enter to send · Shift + Enter for a new line
+          </p>
         </form>
       </div>
     </div>

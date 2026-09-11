@@ -121,6 +121,16 @@ body {
   animation-delay: 0.4s;
 }
 
+/* New assistant reply entrance — quick and subtle, no scaling */
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-message-in {
+  animation: messageIn 0.22s ease-out forwards;
+}
+
 /* Floating card animations — slow, organic, independent */
 @keyframes float-1 {
   0%, 100% { transform: rotate(-3deg) translateY(0px); }
