@@ -17,6 +17,41 @@ export interface ApiChatResponse {
   };
 }
 
+export interface ApiCoffeePreferences {
+  favoriteDrink: string;
+  temperature: "hot" | "iced" | "either";
+  milkPreference: string;
+  sweetness: string;
+  strength: string;
+  caffeinePreference: string;
+  roastPreference: string;
+  brewMethod: string;
+  dietaryPreference: string[];
+  allergiesOrIntolerances: string;
+}
+
+export interface ApiAIContextPreferences {
+  customContext: string;
+  responseStyle: "short" | "balanced" | "detailed";
+  tone: "friendly" | "casual" | "professional" | "playful";
+  recommendationStyle: "best" | "few" | "explain";
+  usePreferencesInConversations: boolean;
+}
+
+export interface ApiUserPreferences {
+  coffee: ApiCoffeePreferences;
+  aiContext: ApiAIContextPreferences;
+  conversationHistoryEnabled: boolean;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface ApiPreferencesUpdate {
+  coffee?: Partial<ApiCoffeePreferences>;
+  aiContext?: Partial<ApiAIContextPreferences>;
+  conversationHistoryEnabled?: boolean;
+}
+
 export class ChatApiError extends Error {
   status: number;
 
@@ -27,23 +62,16 @@ export class ChatApiError extends Error {
   }
 }
 
-export async function sendChatMessage(opts: {
-  messages: ApiChatMessage[];
-  conversationId?: string | null;
-  idToken: string;
-}): Promise<ApiChatResponse> {
+async function apiFetch(path: string, init: RequestInit, idToken: string) {
   let res: Response;
   try {
-    res = await fetch(`${API_BASE_URL}/api/chat`, {
-      method: "POST",
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${opts.idToken}`,
+        Authorization: `Bearer ${idToken}`,
+        ...init.headers,
       },
-      body: JSON.stringify({
-        messages: opts.messages,
-        conversation_id: opts.conversationId ?? null,
-      }),
     });
   } catch {
     throw new ChatApiError("Can't reach the Grounded backend. Is it running?", 0);
@@ -62,9 +90,48 @@ export async function sendChatMessage(opts: {
     throw new ChatApiError(detail, res.status);
   }
 
+  return res;
+}
+
+export async function sendChatMessage(opts: {
+  messages: ApiChatMessage[];
+  conversationId?: string | null;
+  idToken: string;
+}): Promise<ApiChatResponse> {
+  const res = await apiFetch(
+    "/api/chat",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        messages: opts.messages,
+        conversation_id: opts.conversationId ?? null,
+      }),
+    },
+    opts.idToken
+  );
+
   const data = (await res.json()) as ApiChatResponse;
   if (!data.answer) {
     throw new ChatApiError("The assistant returned an empty response.", 502);
   }
   return data;
+}
+
+export async function getUserPreferences(opts: {
+  idToken: string;
+}): Promise<ApiUserPreferences> {
+  const res = await apiFetch("/api/preferences", { method: "GET" }, opts.idToken);
+  return (await res.json()) as ApiUserPreferences;
+}
+
+export async function updateUserPreferences(opts: {
+  idToken: string;
+  updates: ApiPreferencesUpdate;
+}): Promise<ApiUserPreferences> {
+  const res = await apiFetch(
+    "/api/preferences",
+    { method: "PATCH", body: JSON.stringify(opts.updates) },
+    opts.idToken
+  );
+  return (await res.json()) as ApiUserPreferences;
 }

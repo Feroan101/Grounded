@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.chat import router as chat_router
 from app.api.errors import register_exception_handlers
+from app.api.preferences import router as preferences_router
 from app.auth import get_current_user
 from app.config import ALLOWED_ORIGINS, API_HOST, API_PORT, IS_PRODUCTION
 
@@ -30,7 +31,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
 
@@ -39,6 +40,7 @@ logger.info("CORS allowed origins: %s", ALLOWED_ORIGINS)
 register_exception_handlers(app)
 
 app.include_router(chat_router)
+app.include_router(preferences_router)
 
 
 @app.get("/health")

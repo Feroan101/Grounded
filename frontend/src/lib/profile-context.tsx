@@ -20,6 +20,11 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "./auth-context";
 import { getFirebaseFirestore } from "./firebase";
+import {
+  getUserPreferences,
+  updateUserPreferences,
+  ApiUserPreferences,
+} from "./api";
 
 export interface CoffeePreferences {
   favoriteDrink: string;
@@ -98,12 +103,18 @@ export function useProfile() {
   return ctx;
 }
 
-function preferencesPath(uid: string) {
-  return `users/${uid}/preferences/current`;
-}
-
 function memoriesPath(uid: string) {
   return `users/${uid}/memories`;
+}
+
+function applyUserPreferences(data: ApiUserPreferences | undefined, setters: {
+  setCoffee: (v: CoffeePreferences) => void;
+  setAIContext: (v: AIContext) => void;
+  setConversationHistoryEnabled: (v: boolean) => void;
+}) {
+  setters.setCoffee({ ...defaultCoffee, ...data?.coffee });
+  setters.setAIContext({ ...defaultAIContext, ...data?.aiContext });
+  setters.setConversationHistoryEnabled(data?.conversationHistoryEnabled ?? true);
 }
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
@@ -114,8 +125,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [conversationHistoryEnabled, setConversationHistoryEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const unsubscribePrefsRef = useRef<(() => void) | null>(null);
   const unsubscribeMemoriesRef = useRef<(() => void) | null>(null);
+  const prefsRequestRef = useRef(0);
   const prevUserRef = useRef(user);
 
   useEffect(() => {
@@ -133,43 +144,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     if (!user) return;
 
-    if (unsubscribePrefsRef.current) {
-      unsubscribePrefsRef.current();
-      unsubscribePrefsRef.current = null;
-    }
     if (unsubscribeMemoriesRef.current) {
       unsubscribeMemoriesRef.current();
       unsubscribeMemoriesRef.current = null;
     }
 
-    const db = getFirebaseFirestore();
-    let hasLoaded = false;
-
-    const unsubPrefs = onSnapshot(
-      doc(db, preferencesPath(user.uid)),
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          if (data.coffee) setCoffee({ ...defaultCoffee, ...data.coffee });
-          if (data.aiContext) setAIContext({ ...defaultAIContext, ...data.aiContext });
-          if (data.conversationHistoryEnabled !== undefined) {
-            setConversationHistoryEnabled(data.conversationHistoryEnabled);
-          }
-        }
-        if (!hasLoaded) {
-          hasLoaded = true;
-          setLoading(false);
-        }
-      },
-      (err) => {
+    const requestId = ++prefsRequestRef.current;
+    const loadPreferences = async () => {
+      const idToken = await user.getIdToken();
+      if (prefsRequestRef.current !== requestId) return;
+      setLoading(true);
+      try {
+        const data = await getUserPreferences({ idToken });
+        if (prefsRequestRef.current !== requestId) return;
+        applyUserPreferences(data, { setCoffee, setAIContext, setConversationHistoryEnabled });
+      } catch (err) {
         console.error("Failed to load preferences:", err);
-        if (!hasLoaded) {
-          hasLoaded = true;
-          setLoading(false);
-        }
+      } finally {
+        if (prefsRequestRef.current === requestId) setLoading(false);
       }
-    );
+    };
+    loadPreferences();
 
+    const db = getFirebaseFirestore();
     const unsubMemories = onSnapshot(
       collection(db, memoriesPath(user.uid)),
       (snapshot) => {
@@ -190,13 +187,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    unsubscribePrefsRef.current = unsubPrefs;
     unsubscribeMemoriesRef.current = unsubMemories;
 
     return () => {
-      unsubPrefs();
       unsubMemories();
-      unsubscribePrefsRef.current = null;
       unsubscribeMemoriesRef.current = null;
     };
   }, [user]);
@@ -206,10 +200,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (!user) return;
       setSaving(true);
       try {
-        const db = getFirebaseFirestore();
-        const updated = { ...coffee, ...prefs };
-        await setDoc(doc(db, preferencesPath(user.uid)), { coffee: updated }, { merge: true });
-        setCoffee(updated);
+        const idToken = await user.getIdToken();
+        const result = await updateUserPreferences({
+          idToken,
+          updates: { coffee: prefs },
+        });
+        setCoffee({ ...defaultCoffee, ...result.coffee });
       } catch (err) {
         console.error("Failed to save coffee preferences:", err);
         throw err;
@@ -217,7 +213,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         setSaving(false);
       }
     },
-    [user, coffee]
+    [user]
   );
 
   const updateAIContext = useCallback(
@@ -225,10 +221,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (!user) return;
       setSaving(true);
       try {
-        const db = getFirebaseFirestore();
-        const updated = { ...aiContext, ...ctx };
-        await setDoc(doc(db, preferencesPath(user.uid)), { aiContext: updated }, { merge: true });
-        setAIContext(updated);
+        const idToken = await user.getIdToken();
+        const result = await updateUserPreferences({
+          idToken,
+          updates: { aiContext: ctx },
+        });
+        setAIContext({ ...defaultAIContext, ...result.aiContext });
       } catch (err) {
         console.error("Failed to save AI context:", err);
         throw err;
@@ -236,7 +234,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         setSaving(false);
       }
     },
-    [user, aiContext]
+    [user]
   );
 
   const updateConversationHistory = useCallback(
@@ -244,9 +242,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (!user) return;
       setSaving(true);
       try {
-        const db = getFirebaseFirestore();
-        await setDoc(doc(db, preferencesPath(user.uid)), { conversationHistoryEnabled: enabled }, { merge: true });
-        setConversationHistoryEnabled(enabled);
+        const idToken = await user.getIdToken();
+        const result = await updateUserPreferences({
+          idToken,
+          updates: { conversationHistoryEnabled: enabled },
+        });
+        setConversationHistoryEnabled(result.conversationHistoryEnabled ?? enabled);
       } catch (err) {
         console.error("Failed to save conversation history preference:", err);
         throw err;

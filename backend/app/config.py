@@ -153,6 +153,19 @@ PARENT_CHUNK_TOKENS_MAX = _env_int("PARENT_CHUNK_TOKENS_MAX", 1200)
 CHILD_CHUNK_TOKENS_MIN = _env_int("CHILD_CHUNK_TOKENS_MIN", 150)
 CHILD_CHUNK_TOKENS_MAX = _env_int("CHILD_CHUNK_TOKENS_MAX", 300)
 
+# Conversation-history retrieval tuning.
+#
+# History is read lazily through the get_conversation_history tool, never
+# attached to every request. Limits keep reads bounded and the context compact:
+# CONVERSATION_HISTORY_FETCH_LIMIT bounds the Firestore read, while the
+# remaining constants bound what the model is shown per conversation.
+CONVERSATION_HISTORY_FETCH_LIMIT = _env_int("CONVERSATION_HISTORY_FETCH_LIMIT", 8)
+CONVERSATION_HISTORY_MAX_CONVERSATIONS = _env_int(
+    "CONVERSATION_HISTORY_MAX_CONVERSATIONS", 3
+)
+CONVERSATION_HISTORY_MAX_MESSAGES = _env_int("CONVERSATION_HISTORY_MAX_MESSAGES", 6)
+CONVERSATION_HISTORY_MAX_CHARS = _env_int("CONVERSATION_HISTORY_MAX_CHARS", 240)
+
 # Retrieval tuning
 RETRIEVAL_TOP_K = _env_int("RETRIEVAL_TOP_K", 4)
 RETRIEVAL_ENABLE_HYBRID = _env_bool("RETRIEVAL_ENABLE_HYBRID", False)

@@ -2,6 +2,7 @@ import time
 
 from google.cloud import firestore
 
+from app.config import CONVERSATION_HISTORY_FETCH_LIMIT
 from app.firestore_client import get_firestore
 
 
@@ -45,6 +46,26 @@ def get_conversation_messages(uid: str, conversation_id: str, limit: int = 50) -
         .stream()
     )
     return [msg.to_dict() for msg in msgs]
+
+
+def get_recent_conversations(
+    uid: str, limit: int = CONVERSATION_HISTORY_FETCH_LIMIT
+) -> list[dict]:
+    """Return the customer's newest conversation documents, bounded read-only.
+
+    Reads the array-based schema the frontend actually writes:
+    ``users/{uid}/conversations/{id}`` with ``{title, messages: [...],
+    createdAt}``. Newest first, deterministic ordering, never more than
+    ``limit`` documents. Never opens arbitrary paths — the path is derived from
+    the UID passed in, which always comes from a verified Firebase token.
+    """
+    docs = (
+        _conversations_col(uid)
+        .order_by("createdAt", direction=firestore.Query.DESCENDING)
+        .limit(limit)
+        .stream()
+    )
+    return [doc.to_dict() | {"id": doc.id} for doc in docs]
 
 
 def list_conversations(uid: str, limit: int = 20) -> list[dict]:

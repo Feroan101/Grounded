@@ -21,7 +21,7 @@ def chat(
     Firebase token — never from the request body.
     """
     service = get_chat_service()
-    result = service.process(request)
+    result = service.process(request, user)
 
     if not result.ok:
         from fastapi import HTTPException
