@@ -3,10 +3,15 @@
 The auth dependency and the LLM are mocked; the FastAPI app, schema validation,
 the endpoint, and the service run for real.
 """
+import json
+from types import SimpleNamespace
+
+import app.services.chat_service as chat_service
+import app.services.currency_tools as currency_tools
+import app.services.menu_tools as menu_tools
 from starlette.testclient import TestClient
 
 import app.auth as auth_module
-import app.services.chat_service as chat_service
 from app.errors import ConfigurationError
 from app.main import app
 
@@ -173,3 +178,194 @@ def test_missing_api_key_returns_503(monkeypatch):
     assert resp.status_code == 503
     assert "API key" in resp.json()["detail"]
     assert "GEMINI_API_KEY" in resp.json()["detail"]
+
+
+class _ScriptedOutput:
+    def __init__(self, content="", tool_calls=None):
+        self.content = content
+        self.tool_calls = tool_calls or []
+
+
+class _ScriptedModel:
+    """Returns pre-arranged outputs (text or tool calls) in order."""
+
+    def __init__(self, outputs):
+        self.outputs = outputs
+        self.index = 0
+
+    def bind_tools(self, tools):
+        self.bound_tools = tools
+        return self
+
+    def invoke(self, messages):
+        out = self.outputs[self.index]
+        self.index += 1
+        return out
+
+
+class _FakeMenuService:
+    def search(self, **kwargs):
+        return [
+            {
+                "name": "Vanilla Cold Brew",
+                "category": "coffee",
+                "price": 4.5,
+                "size": "16 oz",
+                "caffeine": "high",
+                "temperature": "cold",
+                "sweetness": "medium",
+                "dietary": [],
+                "available": True,
+                "description": "Smooth cold brew with vanilla.",
+            }
+        ]
+
+
+class _FakeCurrencyService:
+    def convert(self, amount, from_currency, to_currency):
+        return SimpleNamespace(
+            original_amount=amount,
+            source_currency=from_currency,
+            converted_amount=390.23,
+            target_currency=to_currency,
+            rate=86.72,
+            rate_date="2026-09-11",
+            provider="Frankfurter",
+        )
+
+
+def _search_menu_call():
+    return {
+        "name": "search_menu",
+        "args": {"query": "cold brew"},
+        "id": "call_1",
+        "type": "tool_call",
+    }
+
+
+def _convert_currency_call():
+    return {
+        "name": "convert_currency",
+        "args": {"amount": 4.5, "from_currency": "USD", "to_currency": "INR"},
+        "id": "call_2",
+        "type": "tool_call",
+    }
+
+
+def _patch_tool_services(monkeypatch):
+    monkeypatch.setattr(menu_tools, "get_menu_service", lambda: _FakeMenuService())
+    monkeypatch.setattr(currency_tools, "get_currency_service", lambda: _FakeCurrencyService())
+
+
+def _parse_sse(text: str) -> list[dict]:
+    events = []
+    for block in text.split("\n\n"):
+        data = "".join(
+            line[5:] for line in block.splitlines() if line.startswith("data:")
+        )
+        if not data:
+            continue
+        try:
+            events.append(json.loads(data))
+        except ValueError:
+            pass
+    return events
+
+
+def _sse_headers(monkeypatch):
+    return {**_valid_headers(monkeypatch), "Accept": "text/event-stream"}
+
+
+def test_sse_stream_emits_tool_events_then_done(monkeypatch):
+    model = _ScriptedModel(
+        [
+            _ScriptedOutput(tool_calls=[_search_menu_call(), _convert_currency_call()]),
+            _ScriptedOutput(content="The Vanilla Cold Brew is $4.50, about ₹390."),
+        ]
+    )
+    monkeypatch.setattr(chat_service, "get_llm", lambda: model)
+    _patch_tool_services(monkeypatch)
+
+    client = TestClient(app)
+    resp = client.post("/api/chat", headers=_sse_headers(monkeypatch), json=_payload())
+
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/event-stream")
+    events = _parse_sse(resp.text)
+    assert [e["type"] for e in events] == ["tool", "tool", "generating", "done"]
+    assert [e.get("name") for e in events if e["type"] == "tool"] == [
+        "search_menu",
+        "convert_currency",
+    ]
+    done = events[-1]
+    assert done["answer"] == "The Vanilla Cold Brew is $4.50, about ₹390."
+    assert done["context"]["retrieval_count"] == 1
+    assert done["context"]["used_preferences"] is False
+
+
+def test_sse_stream_emits_generating_between_tool_rounds(monkeypatch):
+    model = _ScriptedModel(
+        [
+            _ScriptedOutput(tool_calls=[_search_menu_call()]),
+            _ScriptedOutput(tool_calls=[_convert_currency_call()]),
+            _ScriptedOutput(content="Here are the details."),
+        ]
+    )
+    monkeypatch.setattr(chat_service, "get_llm", lambda: model)
+    _patch_tool_services(monkeypatch)
+
+    client = TestClient(app)
+    resp = client.post("/api/chat", headers=_sse_headers(monkeypatch), json=_payload())
+
+    assert resp.status_code == 200
+    types = [e["type"] for e in _parse_sse(resp.text)]
+    assert types == ["tool", "generating", "tool", "generating", "done"]
+
+
+def test_sse_stream_sanitizes_generation_errors(monkeypatch):
+    class _BoomModel:
+        def bind_tools(self, tools):
+            return self
+
+        def invoke(self, messages):
+            raise RuntimeError("upstream exploded")
+
+    monkeypatch.setattr(chat_service, "get_llm", lambda: _BoomModel())
+
+    client = TestClient(app)
+    resp = client.post("/api/chat", headers=_sse_headers(monkeypatch), json=_payload())
+
+    assert resp.status_code == 200
+    events = _parse_sse(resp.text)
+    assert events[-1]["type"] == "error"
+    assert events[-1]["message"] == "Something went wrong while preparing the response."
+    assert "upstream exploded" not in resp.text
+
+
+def test_sse_stream_sanitizes_configuration_error(monkeypatch):
+    def _no_key():
+        raise ConfigurationError(
+            "Gemini API key is not configured. Set GEMINI_API_KEY (or GOOGLE_API_KEY) "
+            "in backend/.env or your environment."
+        )
+
+    monkeypatch.setattr(chat_service, "get_llm", _no_key)
+
+    client = TestClient(app)
+    resp = client.post("/api/chat", headers=_sse_headers(monkeypatch), json=_payload())
+
+    assert resp.status_code == 200
+    events = _parse_sse(resp.text)
+    assert events[-1]["type"] == "error"
+    assert events[-1]["message"] == (
+        "Grounded is still warming up. Please try again in a moment."
+    )
+    assert "GEMINI_API_KEY" not in resp.text
+
+
+def test_sse_stream_requires_authentication():
+    client = TestClient(app)
+    resp = client.post(
+        "/api/chat", headers={"Accept": "text/event-stream"}, json=_payload()
+    )
+    assert resp.status_code == 401

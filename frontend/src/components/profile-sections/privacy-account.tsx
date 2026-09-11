@@ -216,7 +216,7 @@ export function PrivacyAccountSection() {
           </div>
 
           {historySaveError && (
-            <p className="text-xs text-red-600/80 animate-fade-in">{historySaveError}</p>
+            <p className="text-xs text-danger/80 animate-fade-in">{historySaveError}</p>
           )}
 
           <button
@@ -247,7 +247,7 @@ export function PrivacyAccountSection() {
 
           <button
             onClick={() => setShowDeleteAccountDialog(true)}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600/80 transition-all hover:bg-red-50/50"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-danger/80 transition-all hover:bg-danger/10"
           >
             <AlertTriangleIcon className="h-4 w-4" />
             Delete account

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "@/lib/theme-context";
 
 const ANIMATIONS_KEY = "grounded_animations_enabled";
 
@@ -46,11 +47,14 @@ function Toggle({
 
 export function ExperienceSection() {
   const [animations, setAnimations] = useState(getAnimationsEnabled);
+  const { theme, setTheme } = useTheme();
 
   function handleToggleAnimations(value: boolean) {
     setAnimations(value);
     setAnimationsEnabled(value);
   }
+
+  const isDark = theme === "dark";
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -71,6 +75,20 @@ export function ExperienceSection() {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-4 rounded-lg bg-marble/50 px-3 py-2.5">
             <div>
+              <p className="text-sm font-medium text-bean">Dark mode</p>
+              <p className="mt-0.5 text-[11px] text-latte/70">
+                Use a warm, dark coffee-house theme. Follows your system by default
+              </p>
+            </div>
+            <Toggle
+              enabled={isDark}
+              onChange={(value) => setTheme(value ? "dark" : "light")}
+              label="Use dark mode"
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4 rounded-lg bg-marble/50 px-3 py-2.5">
+            <div>
               <p className="text-sm font-medium text-bean">Animations</p>
               <p className="mt-0.5 text-[11px] text-latte/70">
                 Enable smooth transitions and animations throughout the interface
@@ -88,8 +106,8 @@ export function ExperienceSection() {
       {/* Info note */}
       <div className="rounded-xl border border-cafe/15 bg-marble p-4">
         <p className="text-xs leading-relaxed text-latte/70">
-          More display settings will be available as Grounded evolves. For now, animations are the
-          only locally-stored preference.
+          More display settings will be available as Grounded evolves. Display preferences are
+          stored locally in your browser.
         </p>
       </div>
     </div>

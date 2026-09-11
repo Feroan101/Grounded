@@ -17,6 +17,12 @@ export interface ApiChatResponse {
   };
 }
 
+export type ChatActivityEvent =
+  | { type: "tool"; name: string }
+  | { type: "generating" };
+
+export type ChatActivityHandler = (event: ChatActivityEvent) => void;
+
 export interface ApiCoffeePreferences {
   favoriteDrink: string;
   temperature: "hot" | "iced" | "either";
@@ -97,11 +103,15 @@ export async function sendChatMessage(opts: {
   messages: ApiChatMessage[];
   conversationId?: string | null;
   idToken: string;
+  onActivity?: ChatActivityHandler;
 }): Promise<ApiChatResponse> {
   const res = await apiFetch(
     "/api/chat",
     {
       method: "POST",
+      headers: {
+        Accept: "text/event-stream",
+      },
       body: JSON.stringify({
         messages: opts.messages,
         conversation_id: opts.conversationId ?? null,
@@ -110,11 +120,98 @@ export async function sendChatMessage(opts: {
     opts.idToken
   );
 
-  const data = (await res.json()) as ApiChatResponse;
-  if (!data.answer) {
-    throw new ChatApiError("The assistant returned an empty response.", 502);
+  const contentType = res.headers.get("content-type") || "";
+  if (!contentType.includes("text/event-stream")) {
+    // A proxy, or an older/misbehaving backend, answered with plain JSON.
+    const data = (await res.json()) as ApiChatResponse;
+    if (!data.answer) {
+      throw new ChatApiError("The assistant returned an empty response.", 502);
+    }
+    return data;
   }
-  return data;
+
+  return await new Promise((resolve, reject) => {
+    let settled = false;
+
+    readEventStream(res, (payload) => {
+      if (!payload) return;
+      if (settled) return;
+      let data: unknown;
+      try {
+        data = JSON.parse(payload);
+      } catch {
+        return;
+      }
+      const obj = data as Record<string, unknown>;
+      if (obj.type === "tool" && typeof obj.name === "string") {
+        opts.onActivity?.({ type: "tool", name: obj.name });
+      } else if (obj.type === "generating") {
+        opts.onActivity?.({ type: "generating" });
+      } else if (obj.type === "done") {
+        const answer = typeof obj.answer === "string" ? obj.answer : "";
+        if (!answer) {
+          reject(new ChatApiError("The assistant returned an empty response.", 502));
+          settled = true;
+          return;
+        }
+        settled = true;
+        resolve({
+          answer,
+          context: (obj.context ?? {}) as ApiChatResponse["context"],
+        });
+      } else if (obj.type === "error") {
+        const message =
+          typeof obj.message === "string" && obj.message
+            ? obj.message
+            : "Something went wrong while preparing the response.";
+        settled = true;
+        reject(new ChatApiError(message, 502));
+      }
+    })
+      .then(() => {
+        if (!settled) {
+          settled = true;
+          reject(new ChatApiError("The assistant response was cut short.", 502));
+        }
+      })
+      .catch((err: unknown) => {
+        if (settled) return;
+        settled = true;
+        if (err instanceof Error) {
+          reject(err);
+        } else {
+          reject(new ChatApiError("Something went wrong while preparing the response.", 502));
+        }
+      });
+  });
+}
+
+async function readEventStream(
+  res: Response,
+  onData: (payload: string) => void
+): Promise<void> {
+  const reader = res.body?.getReader();
+  if (!reader) {
+    throw new ChatApiError("The assistant response could not be read.", 502);
+  }
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx: number;
+    while ((idx = buffer.indexOf("\n\n")) !== -1) {
+      const block = buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 2);
+      for (const line of block.split("\n")) {
+        // Comment lines (`: ping`) are SSE keepalives — ignore them.
+        if (line.startsWith("data:")) {
+          onData(line.slice(5).trim());
+        }
+      }
+    }
+  }
 }
 
 export async function getUserPreferences(opts: {

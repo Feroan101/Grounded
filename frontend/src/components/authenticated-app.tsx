@@ -8,6 +8,7 @@ import { HistoryView } from "@/components/history-view";
 import { ProfileView } from "@/components/profile-view";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { WakeUpToast } from "@/components/wake-up-toast";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Section = "chat" | "history" | "profile";
 
@@ -129,6 +130,8 @@ function SidebarNav({
         <span className="text-sm font-semibold tracking-widest uppercase text-espresso">
           Grounded
         </span>
+        <span className="flex-1" />
+        <ThemeToggle />
       </div>
 
       <div className="px-3 pt-3">
@@ -291,17 +294,20 @@ function MobileHeader({
           Grounded
         </span>
       </div>
-      {activeSection === "chat" && (
-        <button
-          onClick={onNewChat}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-espresso transition-colors hover:bg-cream/50"
-          aria-label="New chat"
-        >
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        </button>
-      )}
+      <div className="flex items-center gap-1.5">
+        <ThemeToggle />
+        {activeSection === "chat" && (
+          <button
+            onClick={onNewChat}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-espresso transition-colors hover:bg-cream/50"
+            aria-label="New chat"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        )}
+      </div>
     </header>
   );
 }

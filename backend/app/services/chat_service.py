@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import time
+from typing import Callable
 
 from langchain_core.messages import (
     AIMessage,
@@ -120,7 +121,10 @@ class ChatService:
     """Wires a validated chat request to the agent over the LLM."""
 
     def process(
-        self, request: ChatRequest, user: dict | None = None
+        self,
+        request: ChatRequest,
+        user: dict | None = None,
+        on_event: Callable[[str, str | None], None] | None = None,
     ) -> ChatResult:
         uid = (user or {}).get("uid")
         start = time.perf_counter()
@@ -135,7 +139,7 @@ class ChatService:
                 used_order_history,
                 trace,
                 usage,
-            ) = self._generate(llm, request, uid)
+            ) = self._generate(llm, request, uid, on_event=on_event)
         except ConfigurationError as exc:
             logger.warning("Chat requested before AI is configured: %s", exc.message)
             return ChatResult(answer="", error=exc.message, status_code=503)
@@ -172,7 +176,12 @@ class ChatService:
         return result
 
     @staticmethod
-    def _generate(llm, request: ChatRequest, uid: str | None):
+    def _generate(
+        llm,
+        request: ChatRequest,
+        uid: str | None,
+        on_event: Callable[[str, str | None], None] | None = None,
+    ):
         """Build the conversation for Gemini and return the generated text.
 
         Tools are bound to the model. If the model emits tool calls
@@ -181,6 +190,13 @@ class ChatService:
         ``get_order_history``), they are executed and the results are fed back
         to the model. The loop repeats until the model produces a final
         answer. Tools bound with a UID are scoped to that customer.
+
+        When ``on_event`` is provided, it is invoked as the run progresses so
+        callers can stream friendly progress to the client: ``on_event(
+        "generating")`` before each follow-up model round and ``on_event(
+        "tool", tool_name)`` before each tool call executes. Events are
+        observational UI signals only — they never carry arguments, results,
+        or internal details.
 
         Returns ``(text, menu_retrieved, menu_call_count, prefs_used,
         history_used, orders_used, trace, usage)`` so the service can report
@@ -219,6 +235,8 @@ class ChatService:
         trace: list[dict] = []
         usage: list[dict | None] = []
         for round_index in range(_MAX_TOOL_ROUNDS):
+            if on_event and round_index > 0:
+                on_event("generating", None)
             model_output = model.invoke(messages)
             usage.append(_extract_usage(model_output))
             tool_calls = _extract_tool_calls(model_output)
@@ -230,11 +248,14 @@ class ChatService:
             messages.append(model_output)
             for call in tool_calls:
                 started = time.perf_counter()
+                name = call.get("name", "")
+                if on_event:
+                    on_event("tool", name)
                 tool_message = _execute_tool_call(call, tool_by_name)
                 trace.append(
                     {
                         "round": round_index,
-                        "tool": call.get("name", ""),
+                        "tool": name,
                         "args": call.get("args") or {},
                         "ok": _tool_call_ran_cleanly(tool_message),
                         "result": tool_message.content[:4000],
@@ -242,13 +263,13 @@ class ChatService:
                     }
                 )
                 messages.append(tool_message)
-                if call.get("name") == "search_menu":
+                if name == "search_menu":
                     menu_call_count += 1
-                elif call.get("name") == "get_customer_preferences":
+                elif name == "get_customer_preferences":
                     used_preferences = True
-                elif call.get("name") == "get_conversation_history":
+                elif name == "get_conversation_history":
                     used_conversation_history = True
-                elif call.get("name") == "get_order_history":
+                elif name == "get_order_history":
                     used_order_history = True
 
         text = _extract_text(model_output)

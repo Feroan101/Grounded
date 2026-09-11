@@ -9,6 +9,25 @@
   --cream: #E8DCCF;
   --stone: #D8D5CF;
   --cafe: #C4A882;
+  --bubble-tint: rgba(168, 135, 106, 0.15);
+  --bubble-shadow: 0 1px 2px rgba(43, 27, 21, 0.04);
+  --danger: #B42318;
+  --background: var(--marble);
+  --foreground: var(--bean);
+}
+
+[data-theme="dark"] {
+  --marble: #1C1611;
+  --ivory: #251D17;
+  --espresso: #D9B28C;
+  --bean: #F0E6DA;
+  --latte: #C8AD92;
+  --cream: #3A2B1F;
+  --stone: #3B322A;
+  --cafe: #C4A882;
+  --bubble-tint: rgba(201, 173, 146, 0.14);
+  --bubble-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --danger: #F4A79B;
   --background: var(--marble);
   --foreground: var(--bean);
 }
@@ -22,6 +41,9 @@
   --color-cream: var(--cream);
   --color-stone: var(--stone);
   --color-cafe: var(--cafe);
+  --color-bubble-tint: var(--bubble-tint);
+  --color-danger: var(--danger);
+  --shadow-bubble: var(--bubble-shadow);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -31,6 +53,7 @@ body {
   background: var(--marble);
   color: var(--bean);
   font-family: var(--font-sans), system-ui, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Marble background texture */
@@ -47,6 +70,19 @@ body {
   background-image:
     linear-gradient(135deg, transparent 40%, rgba(216, 213, 207, 0.05) 50%, transparent 60%),
     linear-gradient(225deg, transparent 40%, rgba(216, 213, 207, 0.03) 50%, transparent 60%);
+}
+
+[data-theme="dark"] .marble-bg {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(255, 236, 214, 0.045) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 236, 214, 0.035) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgba(255, 236, 214, 0.03) 0%, transparent 50%);
+}
+
+[data-theme="dark"] .marble-veins {
+  background-image:
+    linear-gradient(135deg, transparent 40%, rgba(255, 236, 214, 0.02) 50%, transparent 60%),
+    linear-gradient(225deg, transparent 40%, rgba(255, 236, 214, 0.015) 50%, transparent 60%);
 }
 
 /* Animations */
@@ -171,5 +207,17 @@ button, [role="button"] {
     .h-dvh {
       height: 100vh;
     }
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

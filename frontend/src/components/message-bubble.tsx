@@ -43,7 +43,7 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
       <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-latte/15 ring-1 ring-latte/10">
         <AssistantIcon />
       </div>
-      <div className="max-w-[85%] min-w-0 rounded-2xl rounded-tl-md border border-latte/10 bg-[#A8876A]/15 px-4 py-3 text-bean shadow-[0_1px_2px_rgba(43,27,21,0.04)] sm:max-w-[75%]">
+      <div className="max-w-[85%] min-w-0 rounded-2xl rounded-tl-md border border-latte/10 bg-bubble-tint px-4 py-3 text-bean shadow-bubble sm:max-w-[75%]">
         <MarkdownRenderer content={content} />
       </div>
     </div>

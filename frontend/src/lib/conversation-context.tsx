@@ -24,6 +24,9 @@ import { useProfile } from "./profile-context";
 import { useBackendReadiness } from "./backend-readiness";
 import { getFirebaseFirestore } from "./firebase";
 import { sendChatMessage } from "./api";
+import { friendlyActivity, ACTIVITY_STARTING } from "./activity-labels";
+
+const MIN_ACTIVITY_GAP_MS = 150;
 
 export interface Message {
   role: "user" | "assistant";
@@ -44,6 +47,7 @@ interface ConversationContextValue {
   activeConversationId: string | null;
   activeConversation: Conversation | undefined;
   isSending: boolean;
+  activity: string | null;
   startNewChat: () => void;
   setActiveConversation: (id: string | null) => void;
   sendMessage: (content: string) => Promise<void>;
@@ -87,11 +91,34 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [activity, setActivity] = useState<string | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const activeIdRef = useRef<string | null>(null);
   const historyEnabledRef = useRef(conversationHistoryEnabled);
   const sendingRef = useRef(false);
   const hasConnectedRef = useRef(false);
+  const lastActivityAtRef = useRef(0);
+  const currentActivityRef = useRef<string | null>(null);
+
+  const applyActivity = useCallback((label: string | null) => {
+    if (label === null) {
+      currentActivityRef.current = null;
+      setActivity(null);
+      return;
+    }
+    const now = Date.now();
+    // Suppress flicker: ignore the same label repeated within a short window,
+    // but always surface a real change and always clear to null.
+    if (
+      currentActivityRef.current === label &&
+      now - lastActivityAtRef.current < MIN_ACTIVITY_GAP_MS
+    ) {
+      return;
+    }
+    lastActivityAtRef.current = now;
+    currentActivityRef.current = label;
+    setActivity(label);
+  }, []);
 
   useEffect(() => {
     activeIdRef.current = activeConversationId;
@@ -194,6 +221,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       sendingRef.current = true;
       setIsSending(true);
       setError(null);
+      applyActivity(ACTIVITY_STARTING);
 
       // The first real POST /api/chat acts as the backend readiness check.
       // Surface the wake-up status so the UI can tell the customer the
@@ -244,6 +272,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         setBackendStatus((prev) => (prev === "waking" ? "failed" : prev));
         sendingRef.current = false;
         setIsSending(false);
+        applyActivity(null);
         return;
       }
 
@@ -258,6 +287,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
           })),
           conversationId: convId,
           idToken,
+          onActivity: (event) => applyActivity(friendlyActivity(event)),
         });
         assistantText = result.answer;
       } catch (err) {
@@ -269,6 +299,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         setBackendStatus((prev) => (prev === "waking" ? "failed" : prev));
         sendingRef.current = false;
         setIsSending(false);
+        applyActivity(null);
         return;
       }
 
@@ -291,11 +322,12 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
 
       // First successful backend contact: the readiness check passed.
       setBackendStatus((prev) => (prev === "waking" ? "ready" : prev));
+      applyActivity(null);
 
       sendingRef.current = false;
       setIsSending(false);
     },
-    [user, persistConversation, activeConversation, backendStatus, setBackendStatus]
+    [user, persistConversation, activeConversation, backendStatus, setBackendStatus, applyActivity]
   );
 
   const deleteConversation = useCallback(
@@ -358,6 +390,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         activeConversationId,
         activeConversation,
         isSending,
+        activity,
         startNewChat,
         setActiveConversation: setActiveConversationId,
         sendMessage,

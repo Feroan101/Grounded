@@ -6,7 +6,7 @@ import { useConversations } from "@/lib/conversation-context";
 import { ChatInput } from "@/components/chat-input";
 import { MessageBubble } from "@/components/message-bubble";
 import { EmptyState } from "@/components/empty-state";
-import { ThinkingIndicator } from "@/components/thinking-indicator";
+import { ActivityIndicator } from "@/components/activity-indicator";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -21,7 +21,7 @@ function hasActiveMessages(conv: { messages: { role: string }[] } | undefined): 
 
 export function ChatView() {
   const { user } = useAuth();
-  const { activeConversation, sendMessage, isSending } = useConversations();
+  const { activeConversation, sendMessage, isSending, activity } = useConversations();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isUserNearBottomRef = useRef(true);
@@ -91,7 +91,7 @@ export function ChatView() {
                   <MessageBubble role={msg.role} content={msg.content} />
                 </div>
               ))}
-              {isSending && <ThinkingIndicator />}
+              {isSending && activity && <ActivityIndicator activity={activity} />}
               <div ref={messagesEndRef} />
             </div>
           </div>
