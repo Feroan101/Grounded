@@ -166,6 +166,17 @@ CONVERSATION_HISTORY_MAX_CONVERSATIONS = _env_int(
 CONVERSATION_HISTORY_MAX_MESSAGES = _env_int("CONVERSATION_HISTORY_MAX_MESSAGES", 6)
 CONVERSATION_HISTORY_MAX_CHARS = _env_int("CONVERSATION_HISTORY_MAX_CHARS", 240)
 
+# Order-history retrieval tuning.
+#
+# Like conversation history, order history is read lazily through the
+# get_order_history tool — never attached to every request. The fetch limit
+# bounds the Firestore read; the remaining constants bound what the model is
+# shown (number of orders, line items per order, characters per item name).
+ORDER_HISTORY_FETCH_LIMIT = _env_int("ORDER_HISTORY_FETCH_LIMIT", 8)
+ORDER_HISTORY_MAX_ORDERS = _env_int("ORDER_HISTORY_MAX_ORDERS", 5)
+ORDER_HISTORY_MAX_ITEMS = _env_int("ORDER_HISTORY_MAX_ITEMS", 6)
+ORDER_HISTORY_MAX_CHARS = _env_int("ORDER_HISTORY_MAX_CHARS", 120)
+
 # Retrieval tuning
 RETRIEVAL_TOP_K = _env_int("RETRIEVAL_TOP_K", 4)
 RETRIEVAL_ENABLE_HYBRID = _env_bool("RETRIEVAL_ENABLE_HYBRID", False)

@@ -1,5 +1,6 @@
 from google.cloud import firestore
 
+from app.config import ORDER_HISTORY_FETCH_LIMIT
 from app.firestore_client import get_firestore
 
 
@@ -18,7 +19,13 @@ def save_order(uid: str, items: list[dict], total: float | None = None) -> str:
     return ref.id
 
 
-def get_order_history(uid: str, limit: int = 20) -> list[dict]:
+def get_order_history(uid: str, limit: int = ORDER_HISTORY_FETCH_LIMIT) -> list[dict]:
+    """Return the customer's newest order documents, bounded read-only.
+
+    User-scoped to ``users/{uid}/orders`` (the UID comes from a verified
+    Firebase token). Newest first, deterministic ordering, never more than
+    ``limit`` documents, graceful empty result. Never opens arbitrary paths.
+    """
     docs = (
         _orders_col(uid)
         .order_by("createdAt", direction=firestore.Query.DESCENDING)

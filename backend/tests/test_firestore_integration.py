@@ -134,3 +134,22 @@ class TestFirestoreConnectivity:
         history = get_order_history(test_uid, limit=1)
         assert len(history) >= 1
         assert history[0]["total"] == 180.0
+
+    def test_order_history_service(self, test_uid):
+        """Service bounds and formats the real stored order schema."""
+        from app.firestore_client import get_firestore
+        from app.repositories.orders import save_order
+        from app.services.order_history_service import get_order_history_service
+
+        save_order(
+            test_uid,
+            items=[{"name": "Cappuccino", "qty": 2}, {"name": "Mocha", "qty": 1}],
+            total=470.0,
+        )
+
+        records = get_order_history_service().get_history(test_uid)
+
+        assert records
+        assert records[0].total == "470"
+        assert records[0].items[0] == {"name": "Cappuccino", "qty": 2}
+        assert records[0].date is not None  # server timestamp present

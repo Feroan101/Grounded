@@ -64,6 +64,7 @@ class ChatContextMetadata(BaseModel):
 
     used_preferences: bool = False
     used_conversation_history: bool = False
+    used_order_history: bool = False
     retrieval_used: bool = False
     retrieval_count: int = 0
 

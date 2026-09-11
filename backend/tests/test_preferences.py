@@ -490,6 +490,7 @@ def test_chat_service_binds_preference_tools_for_authenticated_user(monkeypatch)
         "convert_currency",
         "get_conversation_history",
         "get_customer_preferences",
+        "get_order_history",
         "save_preference",
         "search_menu",
     ]
