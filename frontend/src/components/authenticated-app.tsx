@@ -18,13 +18,13 @@ function ErrorToast({ message, onDismiss }: { message: string; onDismiss: () => 
   }, [onDismiss]);
 
   return (
-    <div className="fixed bottom-20 left-1/2 z-[60] -translate-x-1/2 animate-slide-up md:bottom-6">
-      <div className="flex items-center gap-3 rounded-xl border border-espresso/15 bg-marble px-4 py-3 shadow-lg">
+    <div className="fixed inset-x-4 bottom-20 z-[60] animate-slide-up md:bottom-6 md:left-1/2 md:right-auto md:-translate-x-1/2">
+      <div className="flex items-center gap-2.5 rounded-xl border border-espresso/15 bg-marble px-3.5 py-2.5 shadow-lg md:max-w-md md:gap-3 md:px-4 md:py-3">
         <svg className="h-4 w-4 flex-shrink-0 text-espresso" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10" />
           <path d="M12 8v4M12 16h.01" />
         </svg>
-        <p className="text-sm text-bean">{message}</p>
+        <p className="min-w-0 flex-1 break-words text-xs text-bean md:text-sm">{message}</p>
         <button
           onClick={onDismiss}
           className="ml-2 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-latte hover:text-espresso"

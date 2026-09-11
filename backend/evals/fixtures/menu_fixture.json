@@ -1,0 +1,3367 @@
+[
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Tea",
+  "description": "A bold, malty single-origin black tea from Assam, served pure.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "malty",
+   "bold",
+   "strong",
+   "robust"
+  ],
+  "id": "assam-black-tea",
+  "ingredients": [
+   "assam-tea"
+  ],
+  "name": "Assam Black Tea",
+  "price": 170,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "black-tea",
+   "assam",
+   "no-milk",
+   "strong-tea"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Smashed avocado on toasted sourdough with chilli flakes and lime.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "fresh",
+   "tangy",
+   "healthy"
+  ],
+  "id": "avocado-toast",
+  "ingredients": [
+   "sourdough",
+   "avocado",
+   "lime-juice",
+   "chilli-flakes",
+   "olive-oil"
+  ],
+  "name": "Avocado Sourdough Toast",
+  "price": 230,
+  "size": "150 g",
+  "sweetness": "none",
+  "tags": [
+   "toast",
+   "avocado",
+   "vegan",
+   "breakfast",
+   "light"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Moist banana muffin scattered with crunchy toasted walnuts.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "banana",
+   "nutty",
+   "sweet",
+   "moist"
+  ],
+  "id": "banana-walnut-muffin",
+  "ingredients": [
+   "banana",
+   "wheat-flour",
+   "walnut",
+   "butter",
+   "sugar",
+   "egg"
+  ],
+  "name": "Banana Walnut Muffin",
+  "price": 170,
+  "size": "100 g",
+  "sweetness": "medium",
+  "tags": [
+   "bakery",
+   "muffin",
+   "banana",
+   "breakfast"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Tea",
+  "description": "A vibrant blue herbal tea that turns purple with a squeeze of lemon.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "earthy",
+   "floral",
+   "herbal",
+   "color-changing"
+  ],
+  "id": "butterfly-pea-tea",
+  "ingredients": [
+   "butterfly-pea-flower",
+   "lemon"
+  ],
+  "name": "Blue Butterfly Pea Tea",
+  "price": 230,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "herbal-tea",
+   "butterfly-pea",
+   "caffeine-free",
+   "visual"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Tender muffin bursting with juicy blueberries and a crumble top.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "sweet",
+   "tart",
+   "moist"
+  ],
+  "id": "blueberry-muffin",
+  "ingredients": [
+   "wheat-flour",
+   "blueberry",
+   "butter",
+   "sugar",
+   "egg"
+  ],
+  "name": "Blueberry Muffin",
+  "price": 180,
+  "size": "100 g",
+  "sweetness": "medium",
+  "tags": [
+   "bakery",
+   "muffin",
+   "berry",
+   "breakfast"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Espresso topped with hot water for a smooth, full-bodied cup.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "roasted",
+   "smooth",
+   "bold"
+  ],
+  "id": "cafe-americano",
+  "ingredients": [
+   "espresso",
+   "hot-water"
+  ],
+  "name": "Cafe Americano",
+  "price": 200,
+  "size": "180 ml",
+  "sweetness": "none",
+  "tags": [
+   "espresso",
+   "black-coffee",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "A mellow espresso with plenty of steamed milk and a light foam top.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "milky",
+   "smooth"
+  ],
+  "id": "cafe-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "milk-foam"
+  ],
+  "name": "Cafe Latte",
+  "price": 250,
+  "size": "240 ml",
+  "sweetness": "low",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "mild"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "Classic espresso, steamed milk, and rich dark chocolate syrup.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "sweet",
+   "creamy",
+   "roasted"
+  ],
+  "id": "cafe-mocha",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "chocolate-syrup"
+  ],
+  "name": "Cafe Mocha",
+  "price": 290,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "chocolate",
+   "sweet"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Espresso with steamed milk and a thick cap of airy foam.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "roasted",
+   "milky"
+  ],
+  "id": "cappuccino",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "milk-foam"
+  ],
+  "name": "Cappuccino",
+  "price": 240,
+  "size": "180 ml",
+  "sweetness": "low",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "foamy",
+   "foam"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Smooth cold brew with buttery caramel and a touch of milk.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "caramel",
+   "smooth",
+   "sweet",
+   "creamy"
+  ],
+  "id": "caramel-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "caramel-syrup",
+   "whole-milk"
+  ],
+  "name": "Caramel Cold Brew",
+  "price": 320,
+  "size": "250 ml",
+  "sweetness": "high",
+  "tags": [
+   "cold-brew",
+   "caramel",
+   "flavored-cold-brew",
+   "sweet"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Blended ice and milk with espresso and caramel, crowned with caramel drizzle.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "caramel",
+   "sweet",
+   "creamy",
+   "indulgent"
+  ],
+  "id": "caramel-frappe",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "caramel-syrup",
+   "ice",
+   "whipped-cream"
+  ],
+  "name": "Caramel Frappe",
+  "price": 350,
+  "size": "350 ml",
+  "sweetness": "very-high",
+  "tags": [
+   "frappe",
+   "blended",
+   "iced",
+   "caramel",
+   "sweet"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "Steamed milk, espresso, and buttery caramel syrup.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "caramel",
+   "sweet",
+   "creamy",
+   "buttery"
+  ],
+  "id": "caramel-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "caramel-syrup"
+  ],
+  "name": "Caramel Latte",
+  "price": 290,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "caramel",
+   "sweet"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Spiced carrot cake with walnuts and a cream cheese frosting.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spiced",
+   "sweet",
+   "nutty",
+   "moist"
+  ],
+  "id": "carrot-walnut-cake",
+  "ingredients": [
+   "carrot",
+   "wheat-flour",
+   "walnut",
+   "cinnamon",
+   "cream-cheese",
+   "sugar"
+  ],
+  "name": "Carrot Walnut Cake",
+  "price": 220,
+  "size": "120 g",
+  "sweetness": "high",
+  "tags": [
+   "bakery",
+   "cake",
+   "carrot",
+   "spiced"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "Stone-ground ceremonial matcha whisked into steamed milk.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "earthy",
+   "grassy",
+   "creamy",
+   "umami"
+  ],
+  "id": "matcha-latte",
+  "ingredients": [
+   "matcha-powder",
+   "whole-milk"
+  ],
+  "name": "Ceremonial Matcha Latte",
+  "price": 300,
+  "size": "240 ml",
+  "sweetness": "low",
+  "tags": [
+   "matcha",
+   "milk-based",
+   "low-caffeine",
+   "green-tea"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Tea",
+  "description": "Spiced chai concentrate with steamed milk for a creamier, mellower cup.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "creamy",
+   "sweet",
+   "warming"
+  ],
+  "id": "chai-latte",
+  "ingredients": [
+   "chai-concentrate",
+   "whole-milk",
+   "ginger",
+   "cardamom"
+  ],
+  "name": "Chai Latte",
+  "price": 230,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "chai",
+   "milk-based",
+   "latte",
+   "creamy"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Tea",
+  "description": "Soothing chamomile blossoms sweetened gently with honey.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "sweet",
+   "calming",
+   "soft"
+  ],
+  "id": "chamomile-honey-tea",
+  "ingredients": [
+   "chamomile",
+   "honey"
+  ],
+  "name": "Chamomile Honey Tea",
+  "price": 180,
+  "size": "220 ml",
+  "sweetness": "low",
+  "tags": [
+   "herbal-tea",
+   "chamomile",
+   "caffeine-free",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Comforting instant noodle bowl with melted cheese and a pinch of masala.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "savory",
+   "cheesy",
+   "nostalgic",
+   "comforting"
+  ],
+  "id": "cheese-maggi",
+  "ingredients": [
+   "noodles",
+   "cheese",
+   "milk",
+   "garam-masala",
+   "chilli"
+  ],
+  "name": "Cheese Maggi Noodles",
+  "price": 170,
+  "size": "250 g",
+  "sweetness": "none",
+  "tags": [
+   "snack",
+   "noodles",
+   "cheese",
+   "comfort-food",
+   "indian"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Creamy house-made almond and cashew milk, lightly sweetened and served cold.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "nutty",
+   "mild",
+   "sweet"
+  ],
+  "id": "chilled-nut-milk",
+  "ingredients": [
+   "almond-milk",
+   "cashew-milk",
+   "date-syrup"
+  ],
+  "name": "Chilled House Nut Milk",
+  "price": 220,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "milk-based",
+   "nut-milk",
+   "dairy-free",
+   "vegan",
+   "no-coffee"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "Creamy blended banana, cocoa, and milk for a chocolatey treat.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "banana",
+   "creamy",
+   "sweet"
+  ],
+  "id": "chocolate-banana-smoothie",
+  "ingredients": [
+   "banana",
+   "cocoa-powder",
+   "whole-milk",
+   "honey"
+  ],
+  "name": "Chocolate Banana Smoothie",
+  "price": 280,
+  "size": "300 ml",
+  "sweetness": "high",
+  "tags": [
+   "smoothie",
+   "chocolate",
+   "no-coffee",
+   "thick",
+   "dessert-drink"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Buttery croissant wrapped around rich dark chocolate batons.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "buttery",
+   "flaky",
+   "sweet"
+  ],
+  "id": "chocolate-croissant",
+  "ingredients": [
+   "wheat-flour",
+   "butter",
+   "dark-chocolate",
+   "yeast"
+  ],
+  "name": "Chocolate Croissant",
+  "price": 200,
+  "size": "100 g",
+  "sweetness": "medium",
+  "tags": [
+   "bakery",
+   "croissant",
+   "chocolate",
+   "breakfast"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "A warm cinnamon-sugar latte topped with a dusting of ground cinnamon.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "cinnamon",
+   "sweet",
+   "warm",
+   "creamy"
+  ],
+  "id": "cinnamon-dolce-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "cinnamon-syrup",
+   "cinnamon"
+  ],
+  "name": "Cinnamon Dolce Latte",
+  "price": 300,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "cinnamon",
+   "spiced",
+   "sweet"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Flaky, golden croissant with crisp layers and a buttery finish.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "buttery",
+   "flaky",
+   "savory"
+  ],
+  "id": "butter-croissant",
+  "ingredients": [
+   "wheat-flour",
+   "butter",
+   "milk",
+   "yeast"
+  ],
+  "name": "Classic Butter Croissant",
+  "price": 160,
+  "size": "90 g",
+  "sweetness": "low",
+  "tags": [
+   "bakery",
+   "croissant",
+   "breakfast"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Slow-steeped for 18 hours for a smooth, low-acidity, naturally sweet brew.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "smooth",
+   "bold",
+   "chocolatey",
+   "low-acid"
+  ],
+  "id": "classic-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water"
+  ],
+  "name": "Classic Cold Brew",
+  "price": 280,
+  "size": "250 ml",
+  "sweetness": "none",
+  "tags": [
+   "cold-brew",
+   "no-milk",
+   "smooth",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "The beloved blended cold coffee with coffee, milk, sugar, and ice.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "sweet",
+   "smooth",
+   "refreshing"
+  ],
+  "id": "cold-coffee-classic",
+  "ingredients": [
+   "coffee",
+   "whole-milk",
+   "sugar",
+   "ice"
+  ],
+  "name": "Classic Cold Coffee",
+  "price": 250,
+  "size": "300 ml",
+  "sweetness": "high",
+  "tags": [
+   "blended",
+   "iced",
+   "milk-based",
+   "classic",
+   "sweet"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "A single shot of rich, concentrated espresso pulled from our house blend.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "strong",
+   "bold",
+   "roasted"
+  ],
+  "id": "classic-espresso",
+  "ingredients": [
+   "espresso"
+  ],
+  "name": "Classic Espresso",
+  "price": 160,
+  "size": "30 ml",
+  "sweetness": "none",
+  "tags": [
+   "espresso",
+   "strong-coffee",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "Rich melted chocolate blended with steamed milk.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "sweet",
+   "creamy",
+   "warming"
+  ],
+  "id": "classic-hot-chocolate",
+  "ingredients": [
+   "milk-chocolate",
+   "whole-milk"
+  ],
+  "name": "Classic Hot Chocolate",
+  "price": 260,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "hot-chocolate",
+   "milk-based",
+   "chocolate",
+   "kid-friendly",
+   "no-coffee"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Cool, frothy yogurt lassi blended with a gentle sweetness.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "tangy",
+   "sweet",
+   "cooling"
+  ],
+  "id": "classic-sweet-lassi",
+  "ingredients": [
+   "yogurt",
+   "milk",
+   "sugar",
+   "cardamom"
+  ],
+  "name": "Classic Sweet Lassi",
+  "price": 200,
+  "size": "250 ml",
+  "sweetness": "medium",
+  "tags": [
+   "lassi",
+   "yogurt",
+   "no-coffee",
+   "refreshing",
+   "traditional"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Smooth cold brew with creamy coconut milk and a hint of coconut.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "coconut",
+   "smooth",
+   "creamy",
+   "tropical"
+  ],
+  "id": "coconut-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "coconut-milk",
+   "coconut-syrup"
+  ],
+  "name": "Coconut Cold Brew",
+  "price": 330,
+  "size": "300 ml",
+  "sweetness": "low",
+  "tags": [
+   "cold-brew",
+   "coconut",
+   "dairy-free",
+   "vegan",
+   "tropical"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "A tropical cooler of coconut water, lime, and mint over ice.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "tropical",
+   "fresh",
+   "tangy",
+   "refreshing"
+  ],
+  "id": "coconut-lime-cooler",
+  "ingredients": [
+   "coconut-water",
+   "lime-juice",
+   "mint",
+   "crushed-ice"
+  ],
+  "name": "Coconut Lime Cooler",
+  "price": 240,
+  "size": "300 ml",
+  "sweetness": "low",
+  "tags": [
+   "cooler",
+   "coconut",
+   "no-coffee",
+   "vegan",
+   "low-sugar"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "Espresso, chocolate, and coconut milk for a tropical twist on a mocha.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "coconut",
+   "sweet",
+   "creamy"
+  ],
+  "id": "coconut-mocha",
+  "ingredients": [
+   "espresso",
+   "coconut-milk",
+   "chocolate"
+  ],
+  "name": "Coconut Mocha",
+  "price": 320,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "espresso",
+   "dairy-free",
+   "chocolate",
+   "coconut",
+   "vegan"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "A delicate, floral Indian black tea with a light muscatel note.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "delicate",
+   "muscatel",
+   "light"
+  ],
+  "id": "darjeeling-first-flush",
+  "ingredients": [
+   "darjeeling-tea"
+  ],
+  "name": "Darjeeling First Flush",
+  "price": 220,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "black-tea",
+   "darjeeling",
+   "delicate",
+   "premium"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "A less-sweet hot chocolate made with rich dark chocolate.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "dark-chocolate",
+   "bitter",
+   "rich",
+   "warming"
+  ],
+  "id": "dark-hot-chocolate",
+  "ingredients": [
+   "dark-chocolate",
+   "whole-milk"
+  ],
+  "name": "Dark Hot Chocolate",
+  "price": 280,
+  "size": "240 ml",
+  "sweetness": "low",
+  "tags": [
+   "hot-chocolate",
+   "milk-based",
+   "dark",
+   "not-too-sweet",
+   "no-coffee"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "A less-sweet mocha made with dark chocolate and a bold roasted espresso.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "dark-chocolate",
+   "bold",
+   "bitter",
+   "roasted"
+  ],
+  "id": "dark-mocha",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "dark-chocolate"
+  ],
+  "name": "Dark Roast Mocha",
+  "price": 310,
+  "size": "240 ml",
+  "sweetness": "low",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "chocolate",
+   "dark",
+   "not-too-sweet"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "An indulgent double-shot coffee frappe with dark chocolate and cocoa dusting.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "bold",
+   "indulgent",
+   "sweet",
+   "creamy"
+  ],
+  "id": "death-by-chocolate-frappe",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "dark-chocolate",
+   "ice",
+   "whipped-cream",
+   "cocoa-powder"
+  ],
+  "name": "Death By Chocolate Frappe",
+  "price": 370,
+  "size": "350 ml",
+  "sweetness": "very-high",
+  "tags": [
+   "frappe",
+   "blended",
+   "iced",
+   "chocolate",
+   "dessert-drink"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Chewy cookie loaded with dark chocolate chunks.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "sweet",
+   "chewy"
+  ],
+  "id": "double-chocolate-chip-cookie",
+  "ingredients": [
+   "wheat-flour",
+   "butter",
+   "dark-chocolate",
+   "brown-sugar",
+   "egg"
+  ],
+  "name": "Double Chocolate Chip Cookie",
+  "price": 150,
+  "size": "80 g",
+  "sweetness": "very-high",
+  "tags": [
+   "bakery",
+   "cookie",
+   "chocolate"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "very-high",
+  "category": "Hot Coffee",
+  "description": "Two bold shots of espresso for when you need a proper caffeine lift.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "strong",
+   "bold",
+   "intense",
+   "roasted"
+  ],
+  "id": "double-espresso",
+  "ingredients": [
+   "espresso"
+  ],
+  "name": "Double Espresso",
+  "price": 220,
+  "size": "60 ml",
+  "sweetness": "none",
+  "tags": [
+   "espresso",
+   "strong-coffee",
+   "no-milk",
+   "double-shot"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Tea",
+  "description": "Fragrant black tea scented with bergamot, served hot.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "citrusy",
+   "aromatic",
+   "bold"
+  ],
+  "id": "earl-grey",
+  "ingredients": [
+   "black-tea",
+   "bergamot"
+  ],
+  "name": "Earl Grey",
+  "price": 170,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "black-tea",
+   "bergamot",
+   "no-milk",
+   "classic"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Espresso poured over sparkling tonic water for a bright, crisp fizz.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "bright",
+   "citrusy",
+   "refreshing",
+   "sparkling",
+   "bold"
+  ],
+  "id": "espresso-tonic",
+  "ingredients": [
+   "espresso",
+   "tonic-water",
+   "ice"
+  ],
+  "name": "Espresso Tonic",
+  "price": 280,
+  "size": "250 ml",
+  "sweetness": "low",
+  "tags": [
+   "iced",
+   "espresso",
+   "sparkling",
+   "no-milk",
+   "refreshing",
+   "fizzy"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Double espresso and velvety steamed milk with a thin layer of microfoam.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "smooth",
+   "roasted"
+  ],
+  "id": "flat-white",
+  "ingredients": [
+   "espresso",
+   "whole-milk"
+  ],
+  "name": "Flat White",
+  "price": 260,
+  "size": "180 ml",
+  "sweetness": "low",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "smooth"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Semi-oxidized oolong with a smooth, toasty, floral profile.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "toasty",
+   "floral",
+   "smooth",
+   "slightly-sweet"
+  ],
+  "id": "oolong-tea",
+  "ingredients": [
+   "oolong-tea"
+  ],
+  "name": "Fragrant Oolong Tea",
+  "price": 230,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "oolong",
+   "premium-tea",
+   "nos-milk",
+   "low-caffeine"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Filter coffee blended with hot milk and whisked into a creamy, frothy pour.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "frothy",
+   "bold",
+   "sweet"
+  ],
+  "id": "frothy-filter-milk-coffee",
+  "ingredients": [
+   "filter-coffee",
+   "whole-milk",
+   "sugar"
+  ],
+  "name": "Frothy Filter Milk Coffee",
+  "price": 230,
+  "size": "200 ml",
+  "sweetness": "medium",
+  "tags": [
+   "filter-coffee",
+   "milk-based",
+   "frothy",
+   "south-indian"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Tea",
+  "description": "Zesty ginger with lemon and a touch of honey for a warming, soothing cup.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "citrusy",
+   "warming",
+   "fresh"
+  ],
+  "id": "ginger-lemon-tea",
+  "ingredients": [
+   "ginger",
+   "lemon-juice",
+   "honey",
+   "hot-water"
+  ],
+  "name": "Ginger Lemon Tea",
+  "price": 180,
+  "size": "220 ml",
+  "sweetness": "low",
+  "tags": [
+   "herbal",
+   "ginger",
+   "lemon",
+   "caffeine-free",
+   "soothing"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Sweet guava perfectly balanced with basil and a squeeze of lime.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "sweet",
+   "herbal",
+   "refreshing"
+  ],
+  "id": "guava-refresher",
+  "ingredients": [
+   "guava-juice",
+   "basil",
+   "lime-juice",
+   "sparkling-water"
+  ],
+  "name": "Guava Basil Refresher",
+  "price": 260,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "refresher",
+   "fruit-based",
+   "basil",
+   "no-coffee",
+   "vegan"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Food & Bakery",
+  "description": "A crisp pastry shell filled with chocolate ganache and roasted hazelnuts.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "nutty",
+   "rich",
+   "indulgent"
+  ],
+  "id": "hazelnut-chocolate-tart",
+  "ingredients": [
+   "wheat-flour",
+   "dark-chocolate",
+   "hazelnut",
+   "butter",
+   "sugar"
+  ],
+  "name": "Hazelnut Chocolate Tart",
+  "price": 240,
+  "size": "110 g",
+  "sweetness": "very-high",
+  "tags": [
+   "bakery",
+   "tart",
+   "chocolate",
+   "hazelnut"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "A nutty hazelnut-syrup latte with smooth steamed milk.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "nutty",
+   "creamy",
+   "sweet",
+   "toasty"
+  ],
+  "id": "hazelnut-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "hazelnut-syrup"
+  ],
+  "name": "Hazelnut Latte",
+  "price": 290,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "hazelnut",
+   "nutty"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Cold-steeped black tea with a gentle spice of cardamom and cinnamon.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spiced",
+   "smooth",
+   "refreshing",
+   "bold"
+  ],
+  "id": "hmt-tea",
+  "ingredients": [
+   "black-tea",
+   "cardamom",
+   "cinnamon",
+   "cold-water"
+  ],
+  "name": "House Masala Cold Brew Tea",
+  "price": 230,
+  "size": "300 ml",
+  "sweetness": "none",
+  "tags": [
+   "cold-brew-tea",
+   "iced-tea",
+   "spiced",
+   "no-milk"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Vanilla ice cream drowned in a hot shot of espresso served over a little ice.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "vanilla",
+   "bold",
+   "sweet"
+  ],
+  "id": "iced-affogato",
+  "ingredients": [
+   "espresso",
+   "vanilla-ice-cream"
+  ],
+  "name": "Iced Affogato Float",
+  "price": 300,
+  "size": "120 ml",
+  "sweetness": "medium",
+  "tags": [
+   "espresso",
+   "ice-cream",
+   "dessert",
+   "indulgent"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Espresso shaken over ice with cold water for a crisp, refreshing black coffee.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "roasted",
+   "bold",
+   "refreshing",
+   "bright"
+  ],
+  "id": "iced-americano",
+  "ingredients": [
+   "espresso",
+   "cold-water",
+   "ice"
+  ],
+  "name": "Iced Americano",
+  "price": 210,
+  "size": "250 ml",
+  "sweetness": "none",
+  "tags": [
+   "iced",
+   "espresso",
+   "black-coffee",
+   "no-milk",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Chilled espresso and cold milk poured over ice.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "smooth",
+   "milky",
+   "refreshing"
+  ],
+  "id": "iced-cafe-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "ice"
+  ],
+  "name": "Iced Cafe Latte",
+  "price": 270,
+  "size": "300 ml",
+  "sweetness": "low",
+  "tags": [
+   "iced",
+   "espresso",
+   "milk-based",
+   "mild"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Tea",
+  "description": "Spiced chai over ice with chilled milk for a refreshing cool-down.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "creamy",
+   "sweet",
+   "refreshing"
+  ],
+  "id": "iced-chai-latte",
+  "ingredients": [
+   "chai-concentrate",
+   "whole-milk",
+   "ice"
+  ],
+  "name": "Iced Chai Latte",
+  "price": 240,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "chai",
+   "milk-based",
+   "iced",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Iced espresso and milk with the cozy flavour of a cinnamon roll.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "cinnamon",
+   "sweet",
+   "warm",
+   "creamy"
+  ],
+  "id": "iced-cinnamon-roll-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "cinnamon-syrup",
+   "vanilla-syrup",
+   "ice"
+  ],
+  "name": "Iced Cinnamon Roll Latte",
+  "price": 310,
+  "size": "300 ml",
+  "sweetness": "high",
+  "tags": [
+   "iced",
+   "espresso",
+   "cinnamon",
+   "flavored",
+   "sweet"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Frothy whipped coffee cloud over cold milk, stirred before sipping.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "frothy",
+   "sweet",
+   "smooth"
+  ],
+  "id": "iced-dalgona-whipped-coffee",
+  "ingredients": [
+   "instant-coffee",
+   "sugar",
+   "whole-milk",
+   "ice"
+  ],
+  "name": "Iced Dalgona Whipped Coffee",
+  "price": 300,
+  "size": "300 ml",
+  "sweetness": "high",
+  "tags": [
+   "iced",
+   "whipped-coffee",
+   "milk-based",
+   "trending",
+   "sweet"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Tart lemon and black tea served chilled over ice.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "citrusy",
+   "tart",
+   "sweet",
+   "refreshing"
+  ],
+  "id": "iced-lemon-tea",
+  "ingredients": [
+   "black-tea",
+   "lemon-juice",
+   "sugar",
+   "ice"
+  ],
+  "name": "Iced Lemon Tea",
+  "price": 210,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "iced-tea",
+   "lemon",
+   "citrus",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Chilled black tea blended with sweet mango over ice.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "sweet",
+   "tropical",
+   "refreshing"
+  ],
+  "id": "iced-mango-tea",
+  "ingredients": [
+   "black-tea",
+   "mango-pulp",
+   "ice"
+  ],
+  "name": "Iced Mango Tea",
+  "price": 230,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "iced-tea",
+   "mango",
+   "fruit-tea",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "Vibrant matcha shaken with cold milk and ice for a refreshing pick-me-up.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "earthy",
+   "grassy",
+   "creamy",
+   "refreshing"
+  ],
+  "id": "iced-matcha-latte",
+  "ingredients": [
+   "matcha-powder",
+   "whole-milk",
+   "ice"
+  ],
+  "name": "Iced Matcha Latte",
+  "price": 310,
+  "size": "300 ml",
+  "sweetness": "low",
+  "tags": [
+   "matcha",
+   "milk-based",
+   "iced",
+   "low-caffeine"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Chilled black tea infused with sweet ripe peach over ice.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "sweet",
+   "refreshing",
+   "light"
+  ],
+  "id": "iced-peach-tea",
+  "ingredients": [
+   "black-tea",
+   "peach-syrup",
+   "ice"
+  ],
+  "name": "Iced Peach Tea",
+  "price": 220,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "iced-tea",
+   "peach",
+   "fruit-tea",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Cool, fragrant rose-flavoured milk served over ice.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "sweet",
+   "creamy",
+   "refreshing"
+  ],
+  "id": "rose-milk",
+  "ingredients": [
+   "whole-milk",
+   "rose-syrup",
+   "ice"
+  ],
+  "name": "Iced Rose Milk",
+  "price": 230,
+  "size": "300 ml",
+  "sweetness": "high",
+  "tags": [
+   "rose-milk",
+   "milk-based",
+   "floral",
+   "no-coffee"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Cold espresso and milk with vanilla syrup, served over ice.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "vanilla",
+   "creamy",
+   "sweet",
+   "refreshing"
+  ],
+  "id": "iced-vanilla-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "vanilla-syrup",
+   "ice"
+  ],
+  "name": "Iced Vanilla Latte",
+  "price": 300,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "iced",
+   "espresso",
+   "milk-based",
+   "vanilla",
+   "flavored"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "A cozy latte with Irish cream flavouring, espresso, and steamed milk.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "vanilla",
+   "smooth",
+   "sweet"
+  ],
+  "id": "irish-inspired-cream-coffee",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "irish-cream-syrup"
+  ],
+  "name": "Irish Cream Latte",
+  "price": 310,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "irish-cream",
+   "alcohol-free"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Cold brew sweetened with earthy, unrefined jaggery instead of white sugar.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "smooth",
+   "earthy",
+   "caramel",
+   "bold"
+  ],
+  "id": "jaggery-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "jaggery"
+  ],
+  "name": "Jaggery Cold Brew",
+  "price": 320,
+  "size": "250 ml",
+  "sweetness": "medium",
+  "tags": [
+   "cold-brew",
+   "jaggery",
+   "natural-sweetener",
+   "no-milk"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Light green tea scented with delicate jasmine blossoms.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "fresh",
+   "delicate",
+   "light"
+  ],
+  "id": "green-tea-jasmine",
+  "ingredients": [
+   "green-tea",
+   "jasmine"
+  ],
+  "name": "Jasmine Green Tea",
+  "price": 190,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "green-tea",
+   "jasmine",
+   "low-caffeine",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Tea",
+  "description": "An extra-strong, extra-spiced chai brewed bold for a proper kick.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "strong",
+   "bold",
+   "warming"
+  ],
+  "id": "kadak-chai",
+  "ingredients": [
+   "black-tea",
+   "whole-milk",
+   "ginger",
+   "cardamom",
+   "sugar"
+  ],
+  "name": "Kadak Chai",
+  "price": 190,
+  "size": "180 ml",
+  "sweetness": "medium",
+  "tags": [
+   "chai",
+   "milk-based",
+   "strong-tea",
+   "spiced",
+   "kadak"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "A creamy pink Kashmiri-style chai with crushed almonds and cardamom.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "nutty",
+   "floral",
+   "warming",
+   "sweet"
+  ],
+  "id": "keema-chai-latte",
+  "ingredients": [
+   "green-tea",
+   "whole-milk",
+   "almond",
+   "cardamom",
+   "saffron"
+  ],
+  "name": "Kashmiri Keema Chai Latte",
+  "price": 280,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "chai",
+   "kashmiri",
+   "milk-based",
+   "almond",
+   "saffron"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Tea",
+  "description": "Calming caffeine-free tisane of lemongrass, tulsi, and a hint of ginger.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "herbal",
+   "citrusy",
+   "fresh",
+   "calming"
+  ],
+  "id": "lemongrass-tulsi-tea",
+  "ingredients": [
+   "lemongrass",
+   "tulsi",
+   "ginger"
+  ],
+  "name": "Lemongrass Tulsi Tea",
+  "price": 190,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "herbal-tea",
+   "tulsi",
+   "lemongrass",
+   "caffeine-free",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "A bright, chilled mango refresher with lime and sparkling water.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "sweet",
+   "tropical",
+   "refreshing"
+  ],
+  "id": "mango-blast",
+  "ingredients": [
+   "mango-pulp",
+   "lime-juice",
+   "sparkling-water",
+   "mint"
+  ],
+  "name": "Mango Blast Refresher",
+  "price": 250,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "refresher",
+   "fruit-based",
+   "sparkling",
+   "no-coffee",
+   "vegan"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Tea",
+  "description": "Black tea simmered with milk and a house blend of warming spices.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "bold",
+   "aromatic",
+   "warming",
+   "sweet"
+  ],
+  "id": "masala-chai",
+  "ingredients": [
+   "black-tea",
+   "whole-milk",
+   "ginger",
+   "cardamom",
+   "clove",
+   "cinnamon",
+   "sugar"
+  ],
+  "name": "Masala Chai",
+  "price": 180,
+  "size": "220 ml",
+  "sweetness": "medium",
+  "tags": [
+   "chai",
+   "milk-based",
+   "spiced",
+   "classic",
+   "indian-tea"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Grilled sandwich packed with spiced vegetables, chutney, and cheese.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "savory",
+   "spiced",
+   "fresh",
+   "toasty"
+  ],
+  "id": "masala-veg-grilled-sandwich",
+  "ingredients": [
+   "bread",
+   "potato",
+   "capsicum",
+   "onion",
+   "cheese",
+   "green-chutney"
+  ],
+  "name": "Masala Veg Grilled Sandwich",
+  "price": 180,
+  "size": "180 g",
+  "sweetness": "none",
+  "tags": [
+   "sandwich",
+   "savory",
+   "grilled",
+   "indian"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Refreshing cold brew with cool mint and a gentle sweetness.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "mint",
+   "cool",
+   "fresh",
+   "smooth",
+   "refreshing"
+  ],
+  "id": "mint-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "mint-syrup"
+  ],
+  "name": "Mint Cold Brew",
+  "price": 320,
+  "size": "250 ml",
+  "sweetness": "medium",
+  "tags": [
+   "cold-brew",
+   "mint",
+   "no-milk",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "A tangy blend of blueberries, raspberries, and strawberries with yogurt.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "tart",
+   "sweet",
+   "berry"
+  ],
+  "id": "mixed-berry-smoothie",
+  "ingredients": [
+   "blueberry",
+   "raspberry",
+   "strawberry",
+   "yogurt"
+  ],
+  "name": "Mixed Berry Smoothie",
+  "price": 290,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "smoothie",
+   "fruit-based",
+   "berry",
+   "no-coffee",
+   "antioxidant"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Smooth cold brew combined with chocolate and a splash of milk.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "smooth",
+   "sweet",
+   "bold"
+  ],
+  "id": "mocha-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "chocolate",
+   "whole-milk"
+  ],
+  "name": "Mocha Cold Brew",
+  "price": 330,
+  "size": "300 ml",
+  "sweetness": "high",
+  "tags": [
+   "cold-brew",
+   "chocolate",
+   "mocha",
+   "sweet"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "Blended ice, espresso, milk, and chocolate topped with whipped cream.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "sweet",
+   "creamy",
+   "indulgent"
+  ],
+  "id": "mocha-frappe",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "chocolate-syrup",
+   "ice",
+   "whipped-cream"
+  ],
+  "name": "Mocha Frappe",
+  "price": 340,
+  "size": "350 ml",
+  "sweetness": "very-high",
+  "tags": [
+   "frappe",
+   "blended",
+   "iced",
+   "chocolate",
+   "whipped-cream"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "Espresso with rich chocolate and steamed milk, finished with toasted hazelnut.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "nutty",
+   "sweet",
+   "creamy"
+  ],
+  "id": "mochanut",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "chocolate",
+   "hazelnut-syrup"
+  ],
+  "name": "Mochanut",
+  "price": 300,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "chocolate",
+   "hazelnut",
+   "sweet"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Tea",
+  "description": "Green tea steeped with fresh mint and lightly sweetened.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "minty",
+   "fresh",
+   "light",
+   "sweet"
+  ],
+  "id": "moroccan-mint-tea",
+  "ingredients": [
+   "green-tea",
+   "mint",
+   "sugar"
+  ],
+  "name": "Moroccan Mint Tea",
+  "price": 200,
+  "size": "250 ml",
+  "sweetness": "medium",
+  "tags": [
+   "green-tea",
+   "mint",
+   "no-milk",
+   "refreshing"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Flaky croissant filled with saut\u00e9ed mushrooms and melted cheese.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "savory",
+   "earthy",
+   "creamy",
+   "buttery"
+  ],
+  "id": "savory-mushroom-croissant",
+  "ingredients": [
+   "wheat-flour",
+   "butter",
+   "mushroom",
+   "cheese",
+   "herbs"
+  ],
+  "name": "Mushroom & Cheese Croissant",
+  "price": 200,
+  "size": "110 g",
+  "sweetness": "none",
+  "tags": [
+   "bakery",
+   "croissant",
+   "savory",
+   "cheese"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Cold brew finished with almond milk and a touch of roasted almond.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "nutty",
+   "smooth",
+   "creamy",
+   "bold"
+  ],
+  "id": "nutty-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "almond-milk",
+   "almond-syrup"
+  ],
+  "name": "Nutty Almond Cold Brew",
+  "price": 330,
+  "size": "300 ml",
+  "sweetness": "low",
+  "tags": [
+   "cold-brew",
+   "almond",
+   "dairy-free",
+   "nutty",
+   "vegan"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Soft oat cookie with plump raisins and a gentle spice of cinnamon.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "oaty",
+   "fruity",
+   "chewy",
+   "cinnamon"
+  ],
+  "id": "oatmeal-raisin-cookie",
+  "ingredients": [
+   "oats",
+   "wheat-flour",
+   "raisin",
+   "butter",
+   "cinnamon",
+   "sugar"
+  ],
+  "name": "Oatmeal Raisin Cookie",
+  "price": 140,
+  "size": "80 g",
+  "sweetness": "medium",
+  "tags": [
+   "bakery",
+   "cookie",
+   "oatmeal",
+   "grainy"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Toasted sourdough topped with smoky spiced paneer tikka.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "smoky",
+   "spiced",
+   "savory",
+   "creamy"
+  ],
+  "id": "paneer-tikka-toast",
+  "ingredients": [
+   "sourdough",
+   "paneer",
+   "yogurt",
+   "garam-masala",
+   "pepper"
+  ],
+  "name": "Paneer Tikka Toast",
+  "price": 220,
+  "size": "150 g",
+  "sweetness": "none",
+  "tags": [
+   "toast",
+   "savory",
+   "paneer",
+   "tikka"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Bright pineapple with fresh ginger and lime over sparkling water.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "spicy",
+   "sweet",
+   "refreshing"
+  ],
+  "id": "pineapple-ginger-refresher",
+  "ingredients": [
+   "pineapple-juice",
+   "ginger",
+   "lime-juice",
+   "sparkling-water",
+   "crushed-ice"
+  ],
+  "name": "Pineapple Ginger Refresher",
+  "price": 260,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "refresher",
+   "fruit-based",
+   "ginger",
+   "no-coffee",
+   "vegan",
+   "sparkling"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Flaky croissant filled with rich pistachio cream and topped with crushed pistachio.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "nutty",
+   "sweet",
+   "buttery",
+   "flaky"
+  ],
+  "id": "pistachio-croissant",
+  "ingredients": [
+   "wheat-flour",
+   "butter",
+   "pistachio",
+   "sugar"
+  ],
+  "name": "Pistachio Croissant",
+  "price": 250,
+  "size": "100 g",
+  "sweetness": "high",
+  "tags": [
+   "bakery",
+   "croissant",
+   "pistachio",
+   "nutty"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Light tempered flattened rice with peanuts, turmeric, and fresh coriander.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "savory",
+   "tangy",
+   "nutty",
+   "light"
+  ],
+  "id": "poha-breakfast-bowl",
+  "ingredients": [
+   "flattened-rice",
+   "peanut",
+   "turmeric",
+   "green-chilli",
+   "coriander"
+  ],
+  "name": "Poha Breakfast Bowl",
+  "price": 150,
+  "size": "200 g",
+  "sweetness": "none",
+  "tags": [
+   "breakfast",
+   "light",
+   "vegan",
+   "poha",
+   "traditional"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "A fusion cake inspired by rasmalai with saffron, cardamom, and soft sponge.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "creamy",
+   "sweet",
+   "saffron"
+  ],
+  "id": "rasmalai-cake",
+  "ingredients": [
+   "wheat-flour",
+   "cheese",
+   "cream",
+   "saffron",
+   "cardamom",
+   "sugar"
+  ],
+  "name": "Rasmalai Cake Slice",
+  "price": 250,
+  "size": "120 g",
+  "sweetness": "very-high",
+  "tags": [
+   "bakery",
+   "cake",
+   "fusion",
+   "saffron",
+   "dessert"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Velvety red cake layered with tangy cream cheese frosting.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "vanilla",
+   "sweet",
+   "creamy",
+   "rich"
+  ],
+  "id": "red-velvet-cake",
+  "ingredients": [
+   "wheat-flour",
+   "cocoa-powder",
+   "buttermilk",
+   "cream-cheese",
+   "sugar"
+  ],
+  "name": "Red Velvet Cake Slice",
+  "price": 230,
+  "size": "120 g",
+  "sweetness": "very-high",
+  "tags": [
+   "bakery",
+   "cake",
+   "dessert",
+   "cream-cheese"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Tea",
+  "description": "A fragrant, caffeine-free infusion of dried rose petals.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "floral",
+   "delicate",
+   "aromatic",
+   "soft"
+  ],
+  "id": "rose-petal-tea",
+  "ingredients": [
+   "dried-rose-petals",
+   "hot-water"
+  ],
+  "name": "Rose Petal Herbal Tea",
+  "price": 200,
+  "size": "220 ml",
+  "sweetness": "none",
+  "tags": [
+   "herbal-tea",
+   "rose",
+   "caffeine-free",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Our house blend brewed with saffron and crushed green cardamom.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "aromatic",
+   "floral",
+   "warm"
+  ],
+  "id": "saffron-cardamom-brew",
+  "ingredients": [
+   "house-blend-coffee",
+   "saffron",
+   "cardamom"
+  ],
+  "name": "Saffron Cardamom Brew",
+  "price": 270,
+  "size": "200 ml",
+  "sweetness": "low",
+  "tags": [
+   "filter-coffee",
+   "spiced",
+   "saffron",
+   "cardamom",
+   "no-milk"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Cold Coffee",
+  "description": "A decadent blended coffee with salted caramel, topped with cream and sea salt.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "caramel",
+   "salty",
+   "sweet",
+   "indulgent",
+   "creamy"
+  ],
+  "id": "salted-caramel-frappe",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "caramel-syrup",
+   "sea-salt",
+   "ice",
+   "whipped-cream"
+  ],
+  "name": "Salted Caramel Frappe",
+  "price": 360,
+  "size": "350 ml",
+  "sweetness": "very-high",
+  "tags": [
+   "frappe",
+   "blended",
+   "salt",
+   "caramel",
+   "signature"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "Creamy hot chocolate swirled with salted caramel.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "caramel",
+   "sweet",
+   "salty",
+   "creamy"
+  ],
+  "id": "salted-caramel-hot-chocolate",
+  "ingredients": [
+   "milk-chocolate",
+   "whole-milk",
+   "caramel-syrup",
+   "sea-salt"
+  ],
+  "name": "Salted Caramel Hot Chocolate",
+  "price": 300,
+  "size": "240 ml",
+  "sweetness": "very-high",
+  "tags": [
+   "hot-chocolate",
+   "caramel",
+   "milk-based",
+   "indulgent",
+   "no-coffee"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "A salted caramel mocha balancing sweet caramel with a touch of sea salt.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "caramel",
+   "sweet",
+   "salty",
+   "chocolate",
+   "creamy"
+  ],
+  "id": "sea-salt-caramel-mocha",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "caramel-syrup",
+   "chocolate",
+   "sea-salt"
+  ],
+  "name": "Sea Salt Caramel Mocha",
+  "price": 330,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "caramel",
+   "sea-salt",
+   "signature"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Traditional slow-brewed South Indian filter coffee, robust and full of character.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "bold",
+   "roasted",
+   "strong",
+   "earthy"
+  ],
+  "id": "filter-brew",
+  "ingredients": [
+   "filter-coffee",
+   "chicory"
+  ],
+  "name": "South Indian Filter Brew",
+  "price": 190,
+  "size": "180 ml",
+  "sweetness": "none",
+  "tags": [
+   "filter-coffee",
+   "no-milk",
+   "strong-coffee"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Non-Coffee Beverages",
+  "description": "Hot chocolate warmed with cinnamon, cardamom, and a hint of chilli.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "spicy",
+   "warm",
+   "sweet"
+  ],
+  "id": "spiced-hot-chocolate",
+  "ingredients": [
+   "milk-chocolate",
+   "whole-milk",
+   "cinnamon",
+   "cardamom",
+   "chilli"
+  ],
+  "name": "Spiced Hot Chocolate",
+  "price": 300,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "hot-chocolate",
+   "spiced",
+   "chilli",
+   "milk-based",
+   "warming"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "A thick, cooling mango yogurt lassi with a pinch of roasted spices.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "creamy",
+   "sweet",
+   "tropical",
+   "tangy"
+  ],
+  "id": "spiced-mango-lassi",
+  "ingredients": [
+   "mango-pulp",
+   "yogurt",
+   "milk",
+   "cardamom",
+   "sugar"
+  ],
+  "name": "Spiced Mango Lassi",
+  "price": 230,
+  "size": "250 ml",
+  "sweetness": "high",
+  "tags": [
+   "lassi",
+   "yogurt",
+   "mango",
+   "fruit-based",
+   "no-coffee",
+   "refreshing"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Sweetened warm milk simmered with cardamom, saffron, and almond.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "spicy",
+   "sweet",
+   "warming",
+   "nutty"
+  ],
+  "id": "masala-milk",
+  "ingredients": [
+   "whole-milk",
+   "cardamom",
+   "saffron",
+   "almond",
+   "sugar"
+  ],
+  "name": "Steamed Masala Milk",
+  "price": 240,
+  "size": "240 ml",
+  "sweetness": "high",
+  "tags": [
+   "masala-milk",
+   "cardamom",
+   "saffron",
+   "no-coffee",
+   "traditional"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Soft, swirled bun glazed with warm cinnamon and sugary icing.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "cinnamon",
+   "sweet",
+   "warm",
+   "soft"
+  ],
+  "id": "cinnamon-bun",
+  "ingredients": [
+   "wheat-flour",
+   "butter",
+   "cinnamon",
+   "sugar",
+   "icing"
+  ],
+  "name": "Sticky Cinnamon Bun",
+  "price": 200,
+  "size": "110 g",
+  "sweetness": "very-high",
+  "tags": [
+   "bakery",
+   "cinnamon",
+   "sweet-pastry"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Creamy blended strawberries and banana with yogurt and honey.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "creamy",
+   "sweet",
+   "fresh"
+  ],
+  "id": "strawberry-banana-smoothie",
+  "ingredients": [
+   "strawberry",
+   "banana",
+   "yogurt",
+   "honey"
+  ],
+  "name": "Strawberry Banana Smoothie",
+  "price": 270,
+  "size": "300 ml",
+  "sweetness": "medium",
+  "tags": [
+   "smoothie",
+   "fruit-based",
+   "no-coffee",
+   "refreshing",
+   "thick"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Food & Bakery",
+  "description": "Soft, cardamom-spiced sweet roll twisted and baked to a gentle golden.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "cardamom",
+   "sweet",
+   "warm",
+   "soft"
+  ],
+  "id": "cardamom-bun",
+  "ingredients": [
+   "wheat-flour",
+   "cardamom",
+   "butter",
+   "sugar",
+   "yeast"
+  ],
+  "name": "Swedish Cardamom Bun",
+  "price": 190,
+  "size": "100 g",
+  "sweetness": "high",
+  "tags": [
+   "bakery",
+   "cardamom",
+   "sweet-roll",
+   "scandinavian"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Hot Coffee",
+  "description": "Finely ground coffee simmered with spiced milk and a pinch of warming spices.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "spicy",
+   "warm",
+   "aromatic",
+   "bold"
+  ],
+  "id": "turkish-masala-coffee",
+  "ingredients": [
+   "coffee-powder",
+   "whole-milk",
+   "ginger",
+   "cardamom",
+   "cinnamon"
+  ],
+  "name": "Turkish Masala Coffee",
+  "price": 270,
+  "size": "180 ml",
+  "sweetness": "medium",
+  "tags": [
+   "spiced-coffee",
+   "milk-based",
+   "masala",
+   "ginger",
+   "cardamom"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Soothing turmeric and ginger latte with a pinch of black pepper and almond milk.",
+  "dietary": [
+   "vegan",
+   "vegetarian",
+   "dairy-free"
+  ],
+  "flavor_profile": [
+   "earthy",
+   "spicy",
+   "warming",
+   "creamy"
+  ],
+  "id": "turmeric-golden-latte",
+  "ingredients": [
+   "almond-milk",
+   "turmeric",
+   "ginger",
+   "black-pepper",
+   "honey"
+  ],
+  "name": "Turmeric Golden Milk",
+  "price": 280,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "golden-milk",
+   "turmeric",
+   "dairy-free",
+   "no-coffee",
+   "vegan",
+   "warming"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "high",
+  "category": "Cold Coffee",
+  "description": "Smooth cold brew sweetened with a hint of vanilla syrup.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "vanilla",
+   "smooth",
+   "sweet",
+   "bold"
+  ],
+  "id": "vanilla-cold-brew",
+  "ingredients": [
+   "coarse-ground-coffee",
+   "cold-water",
+   "vanilla-syrup"
+  ],
+  "name": "Vanilla Cold Brew",
+  "price": 310,
+  "size": "250 ml",
+  "sweetness": "medium",
+  "tags": [
+   "cold-brew",
+   "vanilla",
+   "flavored-cold-brew",
+   "no-milk"
+  ],
+  "temperature": "cold"
+ },
+ {
+  "available": true,
+  "caffeine": "medium",
+  "category": "Hot Coffee",
+  "description": "A classic latte sweetened with smooth vanilla syrup.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "creamy",
+   "sweet",
+   "vanilla",
+   "smooth"
+  ],
+  "id": "vanilla-latte",
+  "ingredients": [
+   "espresso",
+   "whole-milk",
+   "vanilla-syrup"
+  ],
+  "name": "Vanilla Latte",
+  "price": 280,
+  "size": "240 ml",
+  "sweetness": "medium",
+  "tags": [
+   "espresso",
+   "milk-based",
+   "vanilla",
+   "flavored"
+  ],
+  "temperature": "hot"
+ },
+ {
+  "available": true,
+  "caffeine": "low",
+  "category": "Food & Bakery",
+  "description": "Dense, fudgy chocolate brownie packed with toasted walnuts.",
+  "dietary": [
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "chocolate",
+   "nutty",
+   "rich",
+   "fudgy"
+  ],
+  "id": "walnut-fudge-brownie",
+  "ingredients": [
+   "dark-chocolate",
+   "butter",
+   "walnut",
+   "sugar",
+   "egg",
+   "wheat-flour"
+  ],
+  "name": "Walnut Fudge Brownie",
+  "price": 190,
+  "size": "90 g",
+  "sweetness": "very-high",
+  "tags": [
+   "bakery",
+   "brownie",
+   "chocolate",
+   "walnut"
+  ],
+  "temperature": "ambient"
+ },
+ {
+  "available": true,
+  "caffeine": "none",
+  "category": "Non-Coffee Beverages",
+  "description": "Fresh watermelon muddled with mint and lime over crushed ice.",
+  "dietary": [
+   "vegan",
+   "vegetarian"
+  ],
+  "flavor_profile": [
+   "fruity",
+   "fresh",
+   "cooling",
+   "light"
+  ],
+  "id": "watermelon-refresher",
+  "ingredients": [
+   "watermelon",
+   "mint",
+   "lime-juice",
+   "crushed-ice"
+  ],
+  "name": "Watermelon Mint Refresher",
+  "price": 240,
+  "size": "300 ml",
+  "sweetness": "low",
+  "tags": [
+   "refresher",
+   "fruit-based",
+   "no-coffee",
+   "vegan",
+   "hydrating"
+  ],
+  "temperature": "cold"
+ }
+]

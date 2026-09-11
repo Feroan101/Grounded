@@ -11,6 +11,7 @@ module's internals will change, never the endpoint or the response shape.
 from __future__ import annotations
 
 import logging
+import time
 
 from langchain_core.messages import (
     AIMessage,
@@ -95,11 +96,16 @@ class ChatResult:
         context: ChatContextMetadata | None = None,
         error: str | None = None,
         status_code: int = 200,
+        trace: list | None = None,
+        usage: list | None = None,
     ):
         self.answer = answer
         self.context = context or ChatContextMetadata()
         self.error = error
         self.status_code = status_code
+        self.trace = trace or []
+        self.usage = usage or []
+        self.latency_ms: int | None = None
 
     @property
     def ok(self) -> bool:
@@ -113,6 +119,7 @@ class ChatService:
         self, request: ChatRequest, user: dict | None = None
     ) -> ChatResult:
         uid = (user or {}).get("uid")
+        start = time.perf_counter()
         try:
             llm = get_llm()
             (
@@ -122,6 +129,8 @@ class ChatService:
                 used_preferences,
                 used_conversation_history,
                 used_order_history,
+                trace,
+                usage,
             ) = self._generate(llm, request, uid)
         except ConfigurationError as exc:
             logger.warning("Chat requested before AI is configured: %s", exc.message)
@@ -143,7 +152,7 @@ class ChatService:
                 status_code=502,
             )
 
-        return ChatResult(
+        result = ChatResult(
             answer=answer,
             context=ChatContextMetadata(
                 used_preferences=used_preferences,
@@ -152,7 +161,11 @@ class ChatService:
                 retrieval_used=retrieval_used,
                 retrieval_count=retrieval_count,
             ),
+            trace=trace,
+            usage=usage,
         )
+        result.latency_ms = round((time.perf_counter() - start) * 1000)
+        return result
 
     @staticmethod
     def _generate(llm, request: ChatRequest, uid: str | None):
@@ -166,8 +179,12 @@ class ChatService:
         answer. Tools bound with a UID are scoped to that customer.
 
         Returns ``(text, menu_retrieved, menu_call_count, prefs_used,
-        history_used, orders_used)`` so the service can report honest metadata
-        back to the frontend.
+        history_used, orders_used, trace, usage)`` so the service can report
+        honest metadata back to the frontend. ``trace`` is a list of the
+        executed tool calls (round, tool, args, ok, latency, truncated
+        result); ``usage`` is per-model-round token usage when the provider
+        reports it (else ``None``). Both are observability only and are not
+        exposed through the API.
         """
         messages = [SystemMessage(content=SYSTEM_PROMPT)]
         for msg in request.messages:
@@ -195,8 +212,11 @@ class ChatService:
         used_preferences = False
         used_conversation_history = False
         used_order_history = False
-        for _ in range(_MAX_TOOL_ROUNDS):
+        trace: list[dict] = []
+        usage: list[dict | None] = []
+        for round_index in range(_MAX_TOOL_ROUNDS):
             model_output = model.invoke(messages)
+            usage.append(_extract_usage(model_output))
             tool_calls = _extract_tool_calls(model_output)
             if not tool_calls:
                 break
@@ -205,7 +225,19 @@ class ChatService:
             # which call each result belongs to.
             messages.append(model_output)
             for call in tool_calls:
-                messages.append(_execute_tool_call(call, tool_by_name))
+                started = time.perf_counter()
+                tool_message = _execute_tool_call(call, tool_by_name)
+                trace.append(
+                    {
+                        "round": round_index,
+                        "tool": call.get("name", ""),
+                        "args": call.get("args") or {},
+                        "ok": _tool_call_ran_cleanly(tool_message),
+                        "result": tool_message.content[:4000],
+                        "latency_ms": round((time.perf_counter() - started) * 1000),
+                    }
+                )
+                messages.append(tool_message)
                 if call.get("name") == "search_menu":
                     menu_call_count += 1
                 elif call.get("name") == "get_customer_preferences":
@@ -223,6 +255,8 @@ class ChatService:
             used_preferences,
             used_conversation_history,
             used_order_history,
+            trace,
+            usage,
         )
 
 
@@ -272,6 +306,39 @@ def _execute_tool_call(call: dict, tool_by_name: dict):
             )
 
     return ToolMessage(content=content, tool_call_id=tool_call_id)
+
+
+def _tool_call_ran_cleanly(tool_message: ToolMessage) -> bool:
+    """Heuristic: a tool call "ran" if it did not return an error placeholder."""
+    content = tool_message.content
+    if not isinstance(content, str):
+        return True
+    failed_markers = (
+        "tool failed. Do not guess",
+        "is not available",
+        "You need to sign in",
+    )
+    return not any(marker in content for marker in failed_markers)
+
+
+def _extract_usage(model_output) -> dict | None:
+    """Extract per-round token usage when the provider reports it.
+
+    Returns ``None`` when the provider exposes no usage metadata so callers
+    never fabricate token counts.
+    """
+    usage_metadata = getattr(model_output, "usage_metadata", None)
+    if usage_metadata is None:
+        return None
+    if hasattr(usage_metadata, "model_dump"):
+        usage_metadata = usage_metadata.model_dump()
+    if not isinstance(usage_metadata, dict):
+        return None
+    return {
+        "input_tokens": usage_metadata.get("input_tokens"),
+        "output_tokens": usage_metadata.get("output_tokens"),
+        "total_tokens": usage_metadata.get("total_tokens"),
+    }
 
 
 _chat_service = ChatService()

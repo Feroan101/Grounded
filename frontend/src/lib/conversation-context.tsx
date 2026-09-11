@@ -81,7 +81,7 @@ function conversationsPath(uid: string) {
 export function ConversationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const { conversationHistoryEnabled } = useProfile();
-  const { setStatus: setBackendStatus } = useBackendReadiness();
+  const { status: backendStatus, setStatus: setBackendStatus } = useBackendReadiness();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -197,9 +197,12 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
 
       // The first real POST /api/chat acts as the backend readiness check.
       // Surface the wake-up status so the UI can tell the customer the
-      // backend may still be starting up.
+      // backend may still be starting up. A retry after a connection failure
+      // re-enters the waking state so a later success can move to "ready".
       if (!hasConnectedRef.current) {
         hasConnectedRef.current = true;
+        setBackendStatus("waking");
+      } else if (backendStatus === "failed") {
         setBackendStatus("waking");
       }
 
@@ -292,7 +295,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       sendingRef.current = false;
       setIsSending(false);
     },
-    [user, persistConversation, activeConversation, setBackendStatus]
+    [user, persistConversation, activeConversation, backendStatus, setBackendStatus]
   );
 
   const deleteConversation = useCallback(

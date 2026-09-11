@@ -52,8 +52,8 @@ export function WakeUpToast() {
   const isFailed = status === "failed";
 
   return (
-    <div className="fixed bottom-20 left-1/2 z-[60] -translate-x-1/2 animate-slide-up md:bottom-6">
-      <div className="flex items-center gap-3 rounded-xl border border-cafe/20 bg-ivory px-4 py-3 shadow-lg shadow-cafe/5">
+    <div className="fixed inset-x-4 bottom-20 z-[60] animate-slide-up md:bottom-6 md:left-1/2 md:right-auto md:-translate-x-1/2">
+      <div className="flex items-center gap-2.5 rounded-xl border border-cafe/20 bg-ivory px-3.5 py-2.5 shadow-lg shadow-cafe/5 md:max-w-md md:gap-3 md:px-4 md:py-3">
         {isReady ? (
           <svg className="h-4 w-4 flex-shrink-0 text-espresso" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20 6L9 17l-5-5" />
@@ -69,14 +69,14 @@ export function WakeUpToast() {
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-sm font-medium text-bean">
+          <p className="text-xs font-medium break-words text-bean md:text-sm">
             {isReady
               ? "Grounded is ready"
               : isFailed
                 ? "Grounded is taking longer than expected"
                 : "Waking up Grounded"}
           </p>
-          <p className="text-xs text-latte">
+          <p className="text-[11px] break-words text-latte md:text-xs">
             {isReady
               ? "The coffee machine is warmed up."
               : isFailed
