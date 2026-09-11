@@ -104,7 +104,7 @@ def test_all_cases_have_required_metadata():
         assert c.id and c.category and c.question
         assert c.expected_tools, f"{c.id} expected no tools"
         assert c.plan_expected_items is None or isinstance(c.plan_expected_items, list)
-        assert c.category in {cat.name... for cat in UNUSED} if False else True
+        assert c.category in {cat.name for cat in UNUSED} if False else True
 
 
 def test_dataset_categories_are_active():

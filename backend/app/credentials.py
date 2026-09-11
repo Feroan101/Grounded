@@ -5,6 +5,7 @@ from pathlib import Path
 import google.auth
 import google.auth.credentials
 from google.auth import environment_vars
+from google.oauth2 import service_account
 
 from app.config import FIREBASE_PROJECT_ID
 
@@ -13,6 +14,39 @@ logger = logging.getLogger(__name__)
 _FIRESTORE_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
 _ADC_FILENAME = "application_default_credentials.json"
+
+
+def get_explicit_credentials_path() -> str | None:
+    """Path from ``GOOGLE_APPLICATION_CREDENTIALS`` (tilde-expanded), if set.
+
+    This is the standard mechanism for locating the Google service-account
+    JSON, both locally (a filesystem path) and in production (the mounted
+    Render Secret File, e.g. ``/etc/secrets/...``). The env value may use
+    ``~`` (e.g. ``~/.secrets/...``); it is expanded here so validation and the
+    loader agree on the real path. Returns ``None`` when the variable is
+    unset or empty.
+    """
+    explicit = os.environ.get(environment_vars.CREDENTIALS, "").strip()
+    if not explicit:
+        return None
+    return os.path.expanduser(explicit)
+
+
+def _gcloud_adc_file() -> str | None:
+    """Well-known gcloud ADC file (``gcloud auth application-default login``)."""
+    config_dir = os.environ.get(environment_vars.CLOUD_SDK_CONFIG_DIR, "")
+    if not config_dir:
+        config_dir = str(Path.home() / ".config" / "gcloud")
+    path = Path(config_dir, _ADC_FILENAME)
+    return str(path) if path.is_file() else None
+
+
+def _is_readable_file(path: str) -> bool:
+    try:
+        with Path(path).open("rb"):
+            return True
+    except OSError:
+        return False
 
 
 def is_adc_available() -> bool:
@@ -25,7 +59,8 @@ def is_adc_available() -> bool:
     DNS / blackholed link-local traffic), so we only attempt ADC when an
     explicit, local credential source is present:
 
-      * ``GOOGLE_APPLICATION_CREDENTIALS`` pointing at an existing file, or
+      * ``GOOGLE_APPLICATION_CREDENTIALS`` pointing at an existing, readable
+        file, or
       * the well-known gcloud ADC file
         (``$CLOUDSDK_CONFIG/application_default_credentials.json`` or
         ``~/.config/gcloud/application_default_credentials.json``).
@@ -33,42 +68,67 @@ def is_adc_available() -> bool:
     This mirrors google-auth's own resolution order up to (but excluding) the
     metadata-server step.
     """
-    explicit = os.environ.get(environment_vars.CREDENTIALS, "")
-    if explicit and Path(explicit).is_file():
+    explicit = get_explicit_credentials_path()
+    if explicit and _is_readable_file(explicit):
         return True
-
-    config_dir = os.environ.get(environment_vars.CLOUD_SDK_CONFIG_DIR, "")
-    if not config_dir:
-        config_dir = str(Path.home() / ".config" / "gcloud")
-    return Path(config_dir, _ADC_FILENAME).is_file()
+    return _gcloud_adc_file() is not None
 
 
 def get_credentials() -> google.auth.credentials.Credentials:
-    """Load Google Cloud credentials via Application Default Credentials.
+    """Load Google Cloud credentials for the backend's Firestore reads.
 
-    Resolution order:
-      1. GOOGLE_APPLICATION_CREDENTIALS env var (service-account JSON or WIF config)
-      2. gcloud CLI ADC (gcloud auth application-default login)
-      3. Metadata server (GCE, Cloud Run, GKE)
+    ``GOOGLE_APPLICATION_CREDENTIALS`` is the standard mechanism: when it is
+    set, the file MUST exist and be readable, and we fail loudly with the
+    offending path rather than guessing. When it is unset we fall back to the
+    well-known gcloud ADC file used by ``gcloud auth application-default
+    login``. We never probe the GCE metadata server, so startup never stalls
+    on a host with no metadata service.
 
     Raises RuntimeError with an actionable message if no credentials are found.
     """
-    try:
-        creds, project = google.auth.default(scopes=_FIRESTORE_SCOPES)
+    explicit = get_explicit_credentials_path()
+    if explicit:
+        path = Path(explicit)
+        try:
+            with path.open("rb"):
+                pass
+        except OSError as exc:
+            raise RuntimeError(
+                "GOOGLE_APPLICATION_CREDENTIALS is set but the file is missing "
+                f"or cannot be read: {explicit}"
+            ) from exc
+        try:
+            creds = service_account.Credentials.from_service_account_file(
+                explicit, scopes=_FIRESTORE_SCOPES
+            )
+            project = creds.project_id
+        except Exception as exc:  # malformed JSON, invalid key material, etc.
+            raise RuntimeError(
+                "GOOGLE_APPLICATION_CREDENTIALS points to a file that could "
+                f"not be loaded as Google credentials: {explicit}"
+            ) from exc
         logger.info(
-            "ADC loaded (project=%s, type=%s)",
+            "ADC loaded from GOOGLE_APPLICATION_CREDENTIALS (project=%s, type=%s)",
             project or FIREBASE_PROJECT_ID,
             type(creds).__name__,
         )
         return creds
-    except google.auth.exceptions.DefaultCredentialsError:
-        raise RuntimeError(
-            "No Google Cloud credentials found.\n\n"
-            "For local development:\n"
-            "  1. Install gcloud CLI: https://cloud.google.com/sdk/docs/install\n"
-            "  2. Run: gcloud auth application-default login\n"
-            "  3. Restart the backend\n\n"
-            "For Render deployment:\n"
-            "  Configure Workload Identity Federation or set\n"
-            "  GOOGLE_APPLICATION_CREDENTIALS to a valid credential file.\n"
-        ) from None
+
+    gcloud_file = _gcloud_adc_file()
+    if gcloud_file:
+        creds, project = google.auth.default(scopes=_FIRESTORE_SCOPES)
+        logger.info(
+            "ADC loaded from gcloud ADC file (project=%s, type=%s)",
+            project or FIREBASE_PROJECT_ID,
+            type(creds).__name__,
+        )
+        return creds
+
+    raise RuntimeError(
+        "No Google Cloud credentials found.\n\n"
+        "GOOGLE_APPLICATION_CREDENTIALS is the standard mechanism. Set it to "
+        "a Google service-account JSON file, for example in backend/.env:\n"
+        "  GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json\n\n"
+        "The backend never probes the GCE metadata server, so a missing "
+        "credential is reported here instead of stalling startup."
+    )

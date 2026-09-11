@@ -30,20 +30,23 @@ FIRESTORE_DATABASE = os.environ.get("FIRESTORE_DATABASE", "grounded")
 
 # Firebase Admin credentials — OPTIONAL for auth, REQUIRED for Firestore.
 #
-# Token verification uses Google's public JWKS keys and does NOT need credentials.
-# Credentials are only needed for Admin SDK operations (Firestore, user management).
+# Token verification uses Google's public JWKS keys and does NOT need
+# credentials. Credentials are only needed for Admin SDK operations (Firestore,
+# user management). The backend reads the service-account JSON location from
+# the standard GOOGLE_APPLICATION_CREDENTIALS environment variable (see
+# app/credentials.py); nothing here stores or embeds the JSON itself.
 #
 # Local development (recommended):
 #   gcloud auth application-default login
 #   Then GOOGLE_APPLICATION_CREDENTIALS is set automatically.
 #
-# Alternative (if you have a service-account JSON):
-#   FIREBASE_CREDENTIALS_PATH=/home/you/.grounded/firebase-service-account.json
+# Alternative (service-account JSON kept outside the repo — never committed):
+#   GOOGLE_APPLICATION_CREDENTIALS=/home/you/.grounded/grounded-coffeeshop-ai.json
 #
-# Render (when Firestore access is needed):
-#   Configure Workload Identity Federation or set
-#   GOOGLE_APPLICATION_CREDENTIALS to the mounted credential file.
-FIREBASE_CREDENTIALS_PATH = os.environ.get("FIREBASE_CREDENTIALS_PATH", "")
+# Render (production):
+#   Upload the service-account JSON as a Render Secret File
+#   (grounded-coffeeshop-ai.json) and point the env var at its mount path:
+#   GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/grounded-coffeeshop-ai.json
 
 # Comma-separated list of browser origins allowed to call the backend.
 # ONLY read from the ecosystem. No hardcoded origins — if unset or empty,

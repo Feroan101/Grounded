@@ -6,6 +6,14 @@
 # Secrets (Firestore credentials, Gemini API key, and the final Render
 # authentication mechanism) are provided via Render's env/docs, never in
 # this file.
+#
+# PRODUCTION FIRESTORE AUTH (via Render Secret File):
+#   1. Upload grounded-coffeeshop-ai.json as a Render Secret File. Render
+#      mounts it read-only inside the container at:
+#        /etc/secrets/grounded-coffeeshop-ai.json
+#   2. Set GOOGLE_APPLICATION_CREDENTIALS (below) to that mounted path. The
+#      Python backend reads ONLY this env var — it never embeds the JSON.
+#   Do not commit the service-account JSON to GitHub.
 services:
   - type: web
     name: grounded-backend
@@ -17,16 +25,20 @@ services:
         value: production
       - key: FIREBASE_PROJECT_ID
         value: grounded-coffeeshop-ai
+      - key: FIRESTORE_DATABASE
+        value: grounded
       - key: ALLOWED_ORIGINS
         value: http://localhost:3000
       # LLM provider + model
       - key: LLM_PROVIDER
         value: gemini
       - key: LLM_MODEL
-        value: gemini-2.0-flash
+        value: gemini-3.1-flash-lite
+      # Firestore service-account JSON — provided via Render Secret File
+      # (grounded-coffeeshop-ai.json). Path is the Secret File mount.
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/secrets/grounded-coffeeshop-ai.json
       # Provided via Render secret env:
       #   GOOGLE_API_KEY          (Gemini API key)
-      #   GOOGLE_APPLICATION_CREDENTIALS / FIREBASE_CREDENTIALS_PATH
-      #     (Firestore access — mechanism TBD, see backend/.env.example)
-      #   VECTOR_STORE_PROVIDER / VECTOR_STORE_HOST
-      #     (external vector DB — selected in a later phase)
+      #   QDRANT_URL / QDRANT_API_KEY (semantic menu retrieval)
+      # The service-account JSON contents are NEVER stored here or in the repo.
