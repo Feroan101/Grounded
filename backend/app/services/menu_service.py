@@ -26,11 +26,20 @@ def _lower(value: str | None) -> str:
     return (value or "").strip().lower()
 
 
-def _value_match(item_value: str | None, filter_value: str | None) -> bool:
-    """Exact, case-insensitive scalar match. ``None``/empty filter is ignored."""
-    if not _lower(filter_value):
+def _scalar_filter_match(item_value: str | None, filter_value) -> bool:
+    """Case-insensitive exact match with comma-separated OR semantics.
+
+    A filter may name several exact values (``"none, low"``) so a subjective
+    range such as "not too sweet" can enumerate the actual menu values that
+    satisfy it. ``None``/empty filters are ignored and match everything.
+    """
+    if isinstance(filter_value, (list, tuple)):
+        filter_value = ", ".join(str(v) for v in filter_value)
+    raw = _lower(filter_value)
+    if not raw:
         return True
-    return _lower(item_value) == _lower(filter_value)
+    allowed = {part.strip() for part in raw.split(",") if part.strip()}
+    return _lower(item_value) in allowed
 
 
 def _list_contains(item_values, filter_value: str | None) -> bool:
@@ -284,13 +293,13 @@ class MenuService:
                 # A malformed price can never satisfy a price bound.
                 return False
 
-        if not _value_match(item.get("category"), category):
+        if not _scalar_filter_match(item.get("category"), category):
             return False
-        if not _value_match(item.get("caffeine"), caffeine):
+        if not _scalar_filter_match(item.get("caffeine"), caffeine):
             return False
-        if not _value_match(item.get("temperature"), temperature):
+        if not _scalar_filter_match(item.get("temperature"), temperature):
             return False
-        if not _value_match(item.get("sweetness"), sweetness):
+        if not _scalar_filter_match(item.get("sweetness"), sweetness):
             return False
         if not _list_contains(item.get("dietary"), dietary):
             return False

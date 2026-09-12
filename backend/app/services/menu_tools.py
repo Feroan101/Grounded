@@ -28,13 +28,36 @@ def search_menu(
     available: bool = True,
     flavor: Optional[str] = None,
 ) -> str:
-    """Search the coffee shop menu for drinks and food items.
+    """Search the coffee shop's real menu for drinks and food items.
 
-    Use this tool for ANY question about the menu: product names, prices,
-    ingredients, sizes, milk options, dietary options (vegan, vegetarian,
-    dairy-free), caffeine level, temperature (hot or cold), sweetness, flavors,
-    and availability. Results are read from the shop's real menu database —
-    report only what this tool returns and never invent menu facts.
+    Use this for ANY request that needs menu information, including requests
+    phrased in everyday language that never name a specific item:
+
+    - "something that's not too sweet", "less sweet", "something sweet"
+    - "something cold", "something hot", "something creamy or refreshing"
+    - "something strong", "something chocolatey", "something fruity"
+    - "something without milk", "dairy-free", "vegan", "vegetarian"
+    - "under 200", "around 250", "low caffeine", "high caffeine"
+    - "something similar to a latte"
+
+    Always put the customer's own description in ``query`` — it is matched
+    against the menu's name, description, ingredients, flavors, and tags.
+
+    Structured filters accept ONLY the exact values the menu uses:
+
+    - ``sweetness``: none, low, medium, high, very-high (multiple values may be
+      comma-separated, e.g. "none, low" for "not too sweet")
+    - ``temperature``: hot, cold, ambient
+    - ``caffeine``: none, low, medium, high, very-high
+    - ``dietary``: vegan, vegetarian, dairy-free
+    - ``category``: any menu category (for example Hot Coffee, Cold Coffee, Tea)
+    - ``flavor``: a flavor or tag word such as chocolate, vanilla, fruit, nutty
+
+    Never pass free-form adjectives as filter values (e.g. "sweet" or "not too
+    sweet") — the filters match the exact values above and will find nothing.
+    Results are read from the shop's real menu database — report only what this
+    tool returns, never invent menu facts, and tell the customer the item is
+    not on the menu when nothing matches.
     """
     items = get_menu_service().search(
         query=query,
